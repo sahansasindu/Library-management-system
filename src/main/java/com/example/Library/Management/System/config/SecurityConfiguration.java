@@ -32,7 +32,20 @@ public class SecurityConfiguration {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(
+
+                                "/",
+                                "/index.html",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/api/v1/auth/**",
+                                "/login.html",
+                                "userdashboard.html",
+                                "admindashboard.html"
+
+
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
