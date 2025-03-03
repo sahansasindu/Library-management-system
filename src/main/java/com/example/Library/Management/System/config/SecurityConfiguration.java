@@ -12,7 +12,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -23,29 +22,17 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuth;
     private final AuthenticationProvider authenticationProvider;
 
-
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
+                        .requestMatchers("/api/v1/demo-controller/getadmin","/api/v1/demo-controller/adduser").hasAuthority("ADMIN")
+                        .requestMatchers("http://localhost:8080/api/v1/demo-controller/getuser").hasAuthority("USER")
+                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/authenticate")
+                        .permitAll()
 
-                                "/",
-                                "/index.html",
-                                "/css/**",
-                                "/js/**",
-                                "/images/**",
-                                "/api/v1/auth/**",
-                                "/login.html",
-                                "userdashboard.html",
-                                "admindashboard.html"
-
-
-                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

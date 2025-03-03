@@ -17,8 +17,6 @@ public class Book {
     private String isbn;
     @Column(name="catagory",nullable = false)
     private String catagory;
-    @Column(name="location",nullable = false)
-    private String location;
     @Column(name="qty",nullable = false)
     private int qty;
 
