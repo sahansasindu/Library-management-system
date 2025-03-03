@@ -1,6 +1,8 @@
 package com.example.Library.Management.System.controller;
 
 import com.example.Library.Management.System.dto.MemberDTO;
+import com.example.Library.Management.System.service.impl.AdminServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -8,10 +10,12 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:4200")
 public class AdminController {
 
+    @Autowired
+    private AdminServiceImpl adminService;
+
     @PostMapping("/adduser")
     public void addUserDetails(@RequestBody MemberDTO memberDTO){
-        System.out.println("work");
-        System.out.println(memberDTO.getMember_id());
+        adminService.addNewMember(memberDTO);
     }
 
 
