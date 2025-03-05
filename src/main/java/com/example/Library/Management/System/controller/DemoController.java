@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemoController {
 
     @GetMapping("getadmin")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String>sayHelloAdmin(){
         System.out.println("HI admin");
         return ResponseEntity.ok("Hellow admin");
     }
 
     @GetMapping("getuser")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<String>sayHelloUser(){
         System.out.println("HI User");
         return ResponseEntity.ok("Hellow User");

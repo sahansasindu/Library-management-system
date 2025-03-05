@@ -1,10 +1,8 @@
 package com.example.Library.Management.System.dto;
 
-import jakarta.persistence.Column;
-
 import java.sql.Date;
 
-public class MemberDTO {
+public class MemberDto {
 
     private String member_id;
     private String first_name;

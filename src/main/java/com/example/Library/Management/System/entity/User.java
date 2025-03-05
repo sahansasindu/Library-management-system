@@ -30,8 +30,7 @@ public class User implements UserDetails {
     private Member memberid;
 
 
-    @Column(nullable = false)
-    private String role = "USER";
+    private String role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

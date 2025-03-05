@@ -1,36 +1,14 @@
-package com.example.Library.Management.System.entity;
+package com.example.Library.Management.System.dto;
 
-import jakarta.persistence.*;
-@Entity
-@Table(name = "book")
-public class Book {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long bookId;
-
-    @Column(name = "title", nullable = false)
+public class BookDto {
     private String title;
-
-    @Column(name = "author", nullable = false)
     private String author;
-
-    @Column(name = "isbn", nullable = false)
     private String isbn;
-
-    @Column(name = "category", nullable = false)
     private String category;
-
-    @Column(name = "qty", nullable = false)
     private int qty;
-
-    @Column(name = "photo_url") // Stores the image file path or URL
     private String photoUrl;
 
     // Getters and Setters
-    public long getBookId() { return bookId; }
-    public void setBookId(long bookId) { this.bookId = bookId; }
-
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
