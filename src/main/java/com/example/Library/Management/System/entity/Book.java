@@ -8,17 +8,45 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long book_id;
-    @Column(name="title",nullable = false)
+    private long bookId;
+
+    @Column(name = "title", nullable = false)
     private String title;
-    @Column(name="author",nullable = false)
+
+    @Column(name = "author", nullable = false)
     private String author;
-    @Column(name="isbn",nullable = false)
+
+    @Column(name = "isbn", nullable = false)
     private String isbn;
-    @Column(name="catagory",nullable = false)
-    private String catagory;
-    @Column(name="qty",nullable = false)
+
+    @Column(name = "category", nullable = false)
+    private String category;
+
+    @Column(name = "qty", nullable = false)
     private int qty;
 
+    @Column(name = "photo_url") // Stores the image file path or URL
+    private String photoUrl;
 
+    // Getters and Setters
+    public long getBookId() { return bookId; }
+    public void setBookId(long bookId) { this.bookId = bookId; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getAuthor() { return author; }
+    public void setAuthor(String author) { this.author = author; }
+
+    public String getIsbn() { return isbn; }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+
+    public int getQty() { return qty; }
+    public void setQty(int qty) { this.qty = qty; }
+
+    public String getPhotoUrl() { return photoUrl; }
+    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
 }

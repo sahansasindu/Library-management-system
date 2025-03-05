@@ -1,6 +1,6 @@
 package com.example.Library.Management.System.controller;
 
-import com.example.Library.Management.System.dto.MemberDTO;
+import com.example.Library.Management.System.dto.MemberDto;
 import com.example.Library.Management.System.service.impl.AdminServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ public class AdminController {
     private AdminServiceImpl adminService;
 
     @PostMapping("/adduser")
-    public void addUserDetails(@RequestBody MemberDTO memberDTO){
+    public void addUserDetails(@RequestBody MemberDto memberDTO){
         adminService.addNewMember(memberDTO);
     }
 
