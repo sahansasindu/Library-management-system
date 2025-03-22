@@ -26,4 +26,12 @@ public class AuthenticationController {
     ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
+
+    @PostMapping("/updateprofile")
+    public ResponseEntity<AuthenticationResponse>update(
+            @RequestBody RegisterRequest request
+    ){
+        return ResponseEntity.ok(service.register(request));
+    }
+
 }
