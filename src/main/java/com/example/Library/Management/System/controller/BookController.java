@@ -1,7 +1,7 @@
 package com.example.Library.Management.System.controller;
 
 import com.example.Library.Management.System.dto.BookDto;
-import com.example.Library.Management.System.service.impl.BookServiceImpl;
+import com.example.Library.Management.System.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +13,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
+@CrossOrigin(origins = "http://localhost:4200")
 public class BookController {
 
     @Autowired
-    private BookServiceImpl bookService;
+    private BookService bookService; // Injecting interface
 
     @PostMapping("/add")
     public ResponseEntity<BookDto> addBook(
@@ -24,11 +25,8 @@ public class BookController {
             @RequestPart("file") MultipartFile file) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        BookDto bookdto = objectMapper.readValue(bookDTO, BookDto.class);
-
-        System.out.println(bookDTO);
-        return ResponseEntity.ok( bookService.addBook(bookdto, file));
-
+        BookDto bookDto = objectMapper.readValue(bookDTO, BookDto.class);
+        return ResponseEntity.ok(bookService.addBook(bookDto, file));
     }
 
     @GetMapping("/all")
