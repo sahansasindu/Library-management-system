@@ -28,10 +28,10 @@ public class SecurityConfiguration {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/demo-controller/getadmin","/api/v1/demo-controller/adduser","/api/v1/demo-controller/adduser").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/demo-controller/getadmin","/api/v1/demo-controller/adduser","/api/v1/demo-controller/adduser","/api/books/reserve","/api/books/returnbook").hasAuthority("ADMIN")
                         .requestMatchers("http://localhost:8080/api/v1/demo-controller/getuser").hasAuthority("USER")
                         .requestMatchers("/api/v1/auth/updateprofile").hasAnyAuthority("ADMIN", "USER")
-                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/authenticate","/api/books/add","/api/books/all")
+                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/authenticate","/api/books/all","/api/books/add")
                         .permitAll()
 
                         .anyRequest().authenticated()

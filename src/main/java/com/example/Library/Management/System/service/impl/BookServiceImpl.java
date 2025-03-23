@@ -1,8 +1,10 @@
 package com.example.Library.Management.System.service.impl;
 
 import com.example.Library.Management.System.dto.BookDto;
-import com.example.Library.Management.System.entity.Book;
-import com.example.Library.Management.System.repository.BookRepository;
+import com.example.Library.Management.System.dto.ResearveBookDto;
+import com.example.Library.Management.System.dto.ReturnBookDto;
+import com.example.Library.Management.System.entity.*;
+import com.example.Library.Management.System.repository.*;
 import com.example.Library.Management.System.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,12 +29,31 @@ public class BookServiceImpl implements BookService {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private ResearveBookRepository researveBookRepository;
+
+
+    @Autowired
+    private ConditionRepository conditionRepository;
+
+
+    @Autowired
+    private ReturnBookRepository returnBookRepository;
+
+
+
+
+
     @Override
     public BookDto addBook(BookDto bookDto, MultipartFile file) throws IOException {
         String filePath = saveImage(file);
 
         // Manually mapping DTO to Entity
         Book book = new Book();
+        //book.setBookId(bookDto.getBookid());
         book.setTitle(bookDto.getTitle());
         book.setAuthor(bookDto.getAuthor());
         book.setIsbn(bookDto.getIsbn());
@@ -40,8 +63,8 @@ public class BookServiceImpl implements BookService {
 
         book = bookRepository.save(book);
 
-        // Manually mapping Entity to DTO
-        return mapToDto(book);
+
+       return mapToDto(book);
     }
 
     private String saveImage(MultipartFile file) throws IOException {
@@ -54,6 +77,7 @@ public class BookServiceImpl implements BookService {
         Path filePath = directoryPath.resolve(fileName);
         Files.write(filePath, file.getBytes());
         return filePath.toString();
+
     }
 
     @Override
@@ -62,8 +86,84 @@ public class BookServiceImpl implements BookService {
         return books.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    @Override
+    public void reseaveBook(ResearveBookDto researveBookDto) {
+
+        Member member = memberRepository.findById(researveBookDto.getMember_id())
+                .orElseThrow(() -> new RuntimeException("Member not found with ID: " + researveBookDto.getMember_id()));
+
+
+        Book book = bookRepository.findByBookId(researveBookDto.getBook_id())
+                .orElseThrow(() -> new RuntimeException("Book not found with ID: " + researveBookDto.getBook_id()));
+
+
+        ReseaveBook reseaveBook = new ReseaveBook(member, book, researveBookDto.getReseaved_date());
+        researveBookRepository.save(reseaveBook);
+
+
+    }
+
+    @Override
+    public void returnBook(ReturnBookDto returnBookDto) {
+
+        double penaltyCost = 0.0;
+        LocalDate dueDate=null;
+        LocalDate receivedDate = null;
+        LocalDate reservedDate = null;
+
+        // Fetch the reservation record
+        ReseaveBook reservation = researveBookRepository.findReservation(
+                returnBookDto.getBookid(), returnBookDto.getMemberid()
+        );
+
+        if (reservation != null) {
+
+            reservedDate = reservation.getReservedDate().toLocalDate();
+            dueDate = reservedDate.plusDays(30);
+            receivedDate = returnBookDto.getRecived_date().toLocalDate();
+
+            System.out.println("Reserved Date: " + reservedDate);
+            System.out.println("Due Date: " + dueDate);
+            System.out.println("Received Date: " + receivedDate);
+
+            if (receivedDate.isAfter(dueDate)) {
+                penaltyCost = getPenaltyCost();
+            } else {
+                System.out.println("Book returned on time.");
+            }
+
+            Book book = bookRepository.findByBookId(returnBookDto.getBookid())
+                    .orElseThrow(() -> new RuntimeException("Book not found with ID: " + returnBookDto.getBookid()));
+
+
+            Member member = memberRepository.findById(returnBookDto.getMemberid())
+                    .orElseThrow(() -> new RuntimeException("Member not found with ID: " + returnBookDto.getMemberid()));
+
+
+            Date sqlReceivedDate = Date.valueOf(receivedDate);
+
+
+            ReturnBook returnBook = new ReturnBook(book, member, sqlReceivedDate, penaltyCost);
+            returnBookRepository.save(returnBook);
+
+        } else {
+            System.out.println("No reservation found for this book and member.");
+        }
+
+
+
+    }
+
+
+    // Fetch penalty cost
+    private double getPenaltyCost() {
+        return conditionRepository.findById(1).orElse(new Condition()).getPenalty_cost();
+    }
+
+
     private BookDto mapToDto(Book book) {
         BookDto dto = new BookDto();
+        //dto.setBookid(book.getBookId());
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());

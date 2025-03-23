@@ -1,6 +1,9 @@
 package com.example.Library.Management.System.controller;
 
 import com.example.Library.Management.System.dto.BookDto;
+import com.example.Library.Management.System.dto.ResearveBookDto;
+import com.example.Library.Management.System.dto.ReturnBookDto;
+import com.example.Library.Management.System.entity.ReseaveBook;
 import com.example.Library.Management.System.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +16,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 public class BookController {
 
     @Autowired
     private BookService bookService; // Injecting interface
+
 
     @PostMapping("/add")
     public ResponseEntity<BookDto> addBook(
@@ -32,5 +36,16 @@ public class BookController {
     @GetMapping("/all")
     public ResponseEntity<List<BookDto>> getAllBooks() {
         return ResponseEntity.ok(bookService.getAllBooks());
+    }
+
+
+    @PostMapping("/reserve")
+    public void reserveBook(@RequestBody ResearveBookDto researveBookDto){
+        bookService.reseaveBook(researveBookDto);
+    }
+
+    @PostMapping("/returnbook")
+    public void returnBook(@RequestBody ReturnBookDto returnBookDto){
+        bookService.returnBook(returnBookDto);
     }
 }
