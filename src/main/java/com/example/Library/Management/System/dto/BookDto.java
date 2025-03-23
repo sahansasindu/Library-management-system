@@ -26,4 +26,16 @@ public class BookDto {
 
     public String getPhotoUrl() { return photoUrl; }
     public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+
+    @Override
+    public String toString() {
+        return "BookDto{" +
+                "title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", category='" + category + '\'' +
+                ", qty=" + qty +
+                ", photoUrl='" + photoUrl + '\'' +
+                '}';
+    }
 }

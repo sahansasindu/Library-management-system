@@ -1,6 +1,7 @@
 package com.example.Library.Management.System.controller;
 
 import com.example.Library.Management.System.dto.BookDto;
+import com.example.Library.Management.System.dto.ReportDto;
 import com.example.Library.Management.System.dto.ResearveBookDto;
 import com.example.Library.Management.System.dto.ReturnBookDto;
 import com.example.Library.Management.System.entity.ReseaveBook;
@@ -47,6 +48,12 @@ public class BookController {
     @PostMapping("/returnbook")
     public void returnBook(@RequestBody ReturnBookDto returnBookDto){
         bookService.returnBook(returnBookDto);
+    }
+
+
+    @PostMapping("/borrowbookrecoard")
+    public void borrowBook(@RequestBody ReportDto reportDto){
+       bookService.issueBookHandle(reportDto);
     }
 
 }

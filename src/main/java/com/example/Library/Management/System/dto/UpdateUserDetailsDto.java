@@ -28,4 +28,13 @@ public class UpdateUserDetailsDto {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return "UpdateUserDetailsDto{" +
+                "userid='" + userid + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

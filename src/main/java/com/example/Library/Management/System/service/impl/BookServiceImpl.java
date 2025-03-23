@@ -1,6 +1,7 @@
 package com.example.Library.Management.System.service.impl;
 
 import com.example.Library.Management.System.dto.BookDto;
+import com.example.Library.Management.System.dto.ReportDto;
 import com.example.Library.Management.System.dto.ResearveBookDto;
 import com.example.Library.Management.System.dto.ReturnBookDto;
 import com.example.Library.Management.System.entity.*;
@@ -42,6 +43,9 @@ public class BookServiceImpl implements BookService {
 
     @Autowired
     private ReturnBookRepository returnBookRepository;
+
+    @Autowired
+    private ReportRepository reportRepository;
 
 
 
@@ -96,8 +100,10 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findByBookId(researveBookDto.getBook_id())
                 .orElseThrow(() -> new RuntimeException("Book not found with ID: " + researveBookDto.getBook_id()));
 
+        LocalDate currentDate = LocalDate.now();
+        Date reservedDate = Date.valueOf(currentDate);
 
-        ReseaveBook reseaveBook = new ReseaveBook(member, book, researveBookDto.getReseaved_date());
+        ReseaveBook reseaveBook = new ReseaveBook(member, book,reservedDate);
         researveBookRepository.save(reseaveBook);
 
 
@@ -109,20 +115,19 @@ public class BookServiceImpl implements BookService {
         double penaltyCost = 0.0;
         LocalDate dueDate=null;
         LocalDate receivedDate = null;
-        LocalDate reservedDate = null;
 
-        // Fetch the reservation record
-        ReseaveBook reservation = researveBookRepository.findReservation(
+
+        // Fetch the issue details
+        Report report=reportRepository.findissuedetails(
                 returnBookDto.getBookid(), returnBookDto.getMemberid()
         );
 
-        if (reservation != null) {
 
-            reservedDate = reservation.getReservedDate().toLocalDate();
-            dueDate = reservedDate.plusDays(30);
+        if (report != null) {
+
             receivedDate = returnBookDto.getRecived_date().toLocalDate();
+            dueDate=report.getDueDate().toLocalDate();
 
-            System.out.println("Reserved Date: " + reservedDate);
             System.out.println("Due Date: " + dueDate);
             System.out.println("Received Date: " + receivedDate);
 
@@ -147,7 +152,7 @@ public class BookServiceImpl implements BookService {
             returnBookRepository.save(returnBook);
 
         } else {
-            System.out.println("No reservation found for this book and member.");
+            System.out.println("No reservation found.");
         }
 
 
@@ -155,9 +160,36 @@ public class BookServiceImpl implements BookService {
     }
 
 
+
+
     // Fetch penalty cost
     private double getPenaltyCost() {
         return conditionRepository.findById(1).orElse(new Condition()).getPenalty_cost();
+    }
+
+    @Override
+    public void issueBookHandle(ReportDto reportDto) {
+
+        // Get the current date
+        LocalDate currentDate = LocalDate.now();
+        LocalDate dueDate = currentDate.plusDays(30);
+
+        // Convert LocalDate to SQL Date
+        Date issueDateSql = Date.valueOf(currentDate);
+        Date dueDateSql = Date.valueOf(dueDate);
+
+        // Fetch Member and Book from database
+        Member member = memberRepository.findById(reportDto.getMember_id())
+                .orElseThrow(() -> new RuntimeException("Member not found with ID: " + reportDto.getMember_id()));
+
+        Book book = bookRepository.findByBookId(reportDto.getBook_id())
+                .orElseThrow(() -> new RuntimeException("Book not found with ID: " + reportDto.getBook_id()));
+
+        // Create and save the report
+        Report report = new Report(issueDateSql, dueDateSql, member, book);
+        reportRepository.save(report);
+
+
     }
 
 

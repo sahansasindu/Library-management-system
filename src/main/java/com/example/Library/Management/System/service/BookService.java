@@ -3,6 +3,7 @@ package com.example.Library.Management.System.service;
 
 
 import com.example.Library.Management.System.dto.BookDto;
+import com.example.Library.Management.System.dto.ReportDto;
 import com.example.Library.Management.System.dto.ResearveBookDto;
 import com.example.Library.Management.System.dto.ReturnBookDto;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,4 +21,6 @@ public interface BookService {
     public void reseaveBook(ResearveBookDto researveBookDto);
 
     public void returnBook(ReturnBookDto returnBookDto);
+
+    public void issueBookHandle(ReportDto reportDto);
 }
