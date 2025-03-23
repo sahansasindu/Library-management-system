@@ -3,7 +3,7 @@ package com.example.Library.Management.System.entity;
 import jakarta.persistence.*;
 @Entity
 @Table(name = "book")
-public class Book {
+public class   Book {
 
     @Id
     @Column(name = "bookid", nullable = false, unique = true)
@@ -26,6 +26,9 @@ public class Book {
 
     @Column(name = "photo_url")
     private String photoUrl;
+
+    @Column(name = "activestate", nullable = false)
+    private Boolean active_state = true;
 
 
     public String getBookId() {
@@ -53,4 +56,12 @@ public class Book {
 
     public String getPhotoUrl() { return photoUrl; }
     public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+
+    public Boolean getActive_state() {
+        return active_state;
+    }
+
+    public void setActive_state(Boolean active_state) {
+        this.active_state = active_state;
+    }
 }

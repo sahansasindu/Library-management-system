@@ -57,7 +57,7 @@ public class BookServiceImpl implements BookService {
 
         // Manually mapping DTO to Entity
         Book book = new Book();
-        //book.setBookId(bookDto.getBookid());
+        book.setBookId(bookDto.getBookid());
         book.setTitle(bookDto.getTitle());
         book.setAuthor(bookDto.getAuthor());
         book.setIsbn(bookDto.getIsbn());
@@ -195,7 +195,7 @@ public class BookServiceImpl implements BookService {
 
     private BookDto mapToDto(Book book) {
         BookDto dto = new BookDto();
-        //dto.setBookid(book.getBookId());
+        dto.setBookid(book.getBookId());
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());

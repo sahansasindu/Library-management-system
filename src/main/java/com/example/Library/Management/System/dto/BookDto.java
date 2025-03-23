@@ -1,6 +1,8 @@
 package com.example.Library.Management.System.dto;
 
 public class BookDto {
+
+    private String bookid;
     private String title;
     private String author;
     private String isbn;
@@ -27,10 +29,19 @@ public class BookDto {
     public String getPhotoUrl() { return photoUrl; }
     public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
 
+    public String getBookid() {
+        return bookid;
+    }
+
+    public void setBookid(String bookid) {
+        this.bookid = bookid;
+    }
+
     @Override
     public String toString() {
         return "BookDto{" +
-                "title='" + title + '\'' +
+                "bookid='" + bookid + '\'' +
+                ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", isbn='" + isbn + '\'' +
                 ", category='" + category + '\'' +
