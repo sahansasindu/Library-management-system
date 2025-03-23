@@ -21,14 +21,17 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String email;
     private String password;
+
+    @Column(name = "activestate", nullable = false)
+    private Boolean active_state = true;
+
     @OneToOne
     @JoinColumn(name="member_id")
     private Member memberid;
-
 
     private String role;
 
@@ -36,7 +39,6 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));
     }
-
 
     @Override
     public String getPassword() {
@@ -65,6 +67,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return active_state; // Use active_state to determine if user is enabled
     }
 }
