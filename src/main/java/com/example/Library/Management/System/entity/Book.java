@@ -6,8 +6,8 @@ import jakarta.persistence.*;
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long bookId;
+    @Column(name = "bookid", nullable = false, unique = true)
+    private String bookId;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -15,7 +15,7 @@ public class Book {
     @Column(name = "author", nullable = false)
     private String author;
 
-    @Column(name = "isbn", nullable = false)
+    @Column(name = "isbn", nullable = false, unique = true)
     private String isbn;
 
     @Column(name = "category", nullable = false)
@@ -24,12 +24,17 @@ public class Book {
     @Column(name = "qty", nullable = false)
     private int qty;
 
-    @Column(name = "photo_url") // Stores the image file path or URL
+    @Column(name = "photo_url")
     private String photoUrl;
 
-    // Getters and Setters
-    public long getBookId() { return bookId; }
-    public void setBookId(long bookId) { this.bookId = bookId; }
+
+    public String getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(String bookId) {
+        this.bookId = bookId;
+    }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }

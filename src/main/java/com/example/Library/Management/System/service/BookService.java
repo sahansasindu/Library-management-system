@@ -3,6 +3,8 @@ package com.example.Library.Management.System.service;
 
 
 import com.example.Library.Management.System.dto.BookDto;
+import com.example.Library.Management.System.dto.ResearveBookDto;
+import com.example.Library.Management.System.dto.ReturnBookDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -14,4 +16,8 @@ public interface BookService {
     BookDto addBook(BookDto bookDto, MultipartFile file) throws IOException;
 
     List<BookDto> getAllBooks();
+
+    public void reseaveBook(ResearveBookDto researveBookDto);
+
+    public void returnBook(ReturnBookDto returnBookDto);
 }

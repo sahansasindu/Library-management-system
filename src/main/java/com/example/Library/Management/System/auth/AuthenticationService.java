@@ -50,8 +50,12 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .role(user.getRole())  // Add this line to include the role in the response
+                .id(user.getMemberid())
+                .email(user.getEmail())
                 .build();
     }
+
+
 
 
 }
