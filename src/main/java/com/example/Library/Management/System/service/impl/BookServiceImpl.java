@@ -18,14 +18,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService {
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
 
     @Autowired
     private BookRepository bookRepository;
@@ -53,9 +52,6 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto addBook(BookDto bookDto, MultipartFile file) throws IOException {
-        String filePath = saveImage(file);
-
-        // Manually mapping DTO to Entity
         Book book = new Book();
         book.setBookId(bookDto.getBookid());
         book.setTitle(bookDto.getTitle());
@@ -63,25 +59,13 @@ public class BookServiceImpl implements BookService {
         book.setIsbn(bookDto.getIsbn());
         book.setCategory(bookDto.getCategory());
         book.setQty(bookDto.getQty());
-        book.setPhotoUrl(filePath);
+
+        if (file != null && !file.isEmpty()) {
+            book.setPhoto(file.getBytes()); // Store binary data
+        }
 
         book = bookRepository.save(book);
-
-
-       return mapToDto(book);
-    }
-
-    private String saveImage(MultipartFile file) throws IOException {
-        if (file == null || file.isEmpty()) {
-            return null;
-        }
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path directoryPath = Paths.get(uploadDir);
-        Files.createDirectories(directoryPath);
-        Path filePath = directoryPath.resolve(fileName);
-        Files.write(filePath, file.getBytes());
-        return filePath.toString();
-
+        return mapToDto(book);
     }
 
     @Override
@@ -89,6 +73,28 @@ public class BookServiceImpl implements BookService {
         List<Book> books = bookRepository.findAll();
         return books.stream().map(this::mapToDto).collect(Collectors.toList());
     }
+
+    private BookDto mapToDto(Book book) {
+        BookDto dto = new BookDto();
+        dto.setBookid(book.getBookId());
+        dto.setTitle(book.getTitle());
+        dto.setAuthor(book.getAuthor());
+        dto.setIsbn(book.getIsbn());
+        dto.setCategory(book.getCategory());
+        dto.setQty(book.getQty());
+
+        if (book.getPhoto() != null) {
+            String base64Image = Base64.getEncoder().encodeToString(book.getPhoto());
+            dto.setPhotoBase64("data:image/jpeg;base64," + base64Image);
+        }
+
+        return dto;
+    }
+
+
+
+
+
 
     @Override
     public void reseaveBook(ResearveBookDto researveBookDto) {
@@ -160,8 +166,6 @@ public class BookServiceImpl implements BookService {
     }
 
 
-
-
     // Fetch penalty cost
     private double getPenaltyCost() {
         return conditionRepository.findById(1).orElse(new Condition()).getPenalty_cost();
@@ -193,15 +197,5 @@ public class BookServiceImpl implements BookService {
     }
 
 
-    private BookDto mapToDto(Book book) {
-        BookDto dto = new BookDto();
-        dto.setBookid(book.getBookId());
-        dto.setTitle(book.getTitle());
-        dto.setAuthor(book.getAuthor());
-        dto.setIsbn(book.getIsbn());
-        dto.setCategory(book.getCategory());
-        dto.setQty(book.getQty());
-        dto.setPhotoUrl(book.getPhotoUrl());
-        return dto;
-    }
+
 }

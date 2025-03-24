@@ -28,6 +28,7 @@ public class SecurityConfiguration {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/", "**", "/image/**").permitAll()
                         .requestMatchers("/api/v1/demo-controller/getadmin","/api/v1/demo-controller/adduser","/api/v1/demo-controller/adduser","/api/books/reserve","/api/books/returnbook","/api/books/borrowbookrecoard").hasAuthority("ADMIN")
                         .requestMatchers("http://localhost:8080/api/v1/demo-controller/getuser").hasAuthority("USER")
                         .requestMatchers("/api/v1/auth/updateprofile").hasAnyAuthority("ADMIN", "USER")

@@ -15,7 +15,6 @@ public interface BookService {
 
     // Remove method body; only signature here
     BookDto addBook(BookDto bookDto, MultipartFile file) throws IOException;
-
     List<BookDto> getAllBooks();
 
     public void reseaveBook(ResearveBookDto researveBookDto);

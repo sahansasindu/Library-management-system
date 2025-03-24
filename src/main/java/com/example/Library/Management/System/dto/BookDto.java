@@ -8,9 +8,12 @@ public class BookDto {
     private String isbn;
     private String category;
     private int qty;
-    private String photoUrl;
+    private String photoBase64; // Change to Base64
 
     // Getters and Setters
+    public String getBookid() { return bookid; }
+    public void setBookid(String bookid) { this.bookid = bookid; }
+
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
@@ -26,27 +29,6 @@ public class BookDto {
     public int getQty() { return qty; }
     public void setQty(int qty) { this.qty = qty; }
 
-    public String getPhotoUrl() { return photoUrl; }
-    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
-
-    public String getBookid() {
-        return bookid;
-    }
-
-    public void setBookid(String bookid) {
-        this.bookid = bookid;
-    }
-
-    @Override
-    public String toString() {
-        return "BookDto{" +
-                "bookid='" + bookid + '\'' +
-                ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", isbn='" + isbn + '\'' +
-                ", category='" + category + '\'' +
-                ", qty=" + qty +
-                ", photoUrl='" + photoUrl + '\'' +
-                '}';
-    }
+    public String getPhotoBase64() { return photoBase64; }
+    public void setPhotoBase64(String photoBase64) { this.photoBase64 = photoBase64; }
 }
