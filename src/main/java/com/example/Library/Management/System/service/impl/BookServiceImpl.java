@@ -7,8 +7,10 @@ import com.example.Library.Management.System.dto.ReturnBookDto;
 import com.example.Library.Management.System.entity.*;
 import com.example.Library.Management.System.repository.*;
 import com.example.Library.Management.System.service.BookService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,26 +48,30 @@ public class BookServiceImpl implements BookService {
     @Autowired
     private ReportRepository reportRepository;
 
-
-
-
-
+    
     @Override
-    public BookDto addBook(BookDto bookDto, MultipartFile file) throws IOException {
-        Book book = new Book();
-        book.setBookId(bookDto.getBookid());
-        book.setTitle(bookDto.getTitle());
-        book.setAuthor(bookDto.getAuthor());
-        book.setIsbn(bookDto.getIsbn());
-        book.setCategory(bookDto.getCategory());
-        book.setQty(bookDto.getQty());
+    @Transactional
+    public BookDto addBook(BookDto bookDto, MultipartFile file) {
+        try {
+            Book book = new Book();
+            book.setBookId(bookDto.getBookid());
+            book.setTitle(bookDto.getTitle());
+            book.setAuthor(bookDto.getAuthor());
+            book.setIsbn(bookDto.getIsbn());
+            book.setCategory(bookDto.getCategory());
+            book.setQty(bookDto.getQty());
 
-        if (file != null && !file.isEmpty()) {
-            book.setPhoto(file.getBytes()); // Store binary data
+            if (file != null && !file.isEmpty()) {
+                book.setPhoto(file.getBytes());
+            }
+
+            book = bookRepository.save(book);
+            return mapToDto(book);
+        } catch (IOException e) {
+            throw new RuntimeException("Error processing file: " + e.getMessage());
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Database error: " + e.getMessage());
         }
-
-        book = bookRepository.save(book);
-        return mapToDto(book);
     }
 
     @Override
