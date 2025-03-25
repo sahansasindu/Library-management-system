@@ -48,7 +48,7 @@ public class BookServiceImpl implements BookService {
     @Autowired
     private ReportRepository reportRepository;
 
-    
+
     @Override
     @Transactional
     public BookDto addBook(BookDto bookDto, MultipartFile file) {
@@ -115,9 +115,12 @@ public class BookServiceImpl implements BookService {
         LocalDate currentDate = LocalDate.now();
         Date reservedDate = Date.valueOf(currentDate);
 
-        ReseaveBook reseaveBook = new ReseaveBook(member, book,reservedDate);
-        researveBookRepository.save(reseaveBook);
-
+        try {
+            ReseaveBook reseaveBook = new ReseaveBook(member, book, reservedDate);
+            researveBookRepository.save(reseaveBook);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error reserving book: " + e.getMessage());
+        }
 
     }
 
@@ -165,6 +168,8 @@ public class BookServiceImpl implements BookService {
 
         } else {
             System.out.println("No reservation found.");
+            throw new RuntimeException("No issue record found for book ID: " + returnBookDto.getBookid() + " and member ID: " + returnBookDto.getMemberid());
+
         }
 
 
@@ -180,7 +185,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void issueBookHandle(ReportDto reportDto) {
 
-        // Get the current date
+
         LocalDate currentDate = LocalDate.now();
         LocalDate dueDate = currentDate.plusDays(30);
 
@@ -188,20 +193,22 @@ public class BookServiceImpl implements BookService {
         Date issueDateSql = Date.valueOf(currentDate);
         Date dueDateSql = Date.valueOf(dueDate);
 
-        // Fetch Member and Book from database
+
         Member member = memberRepository.findById(reportDto.getMember_id())
                 .orElseThrow(() -> new RuntimeException("Member not found with ID: " + reportDto.getMember_id()));
 
         Book book = bookRepository.findByBookId(reportDto.getBook_id())
                 .orElseThrow(() -> new RuntimeException("Book not found with ID: " + reportDto.getBook_id()));
 
-        // Create and save the report
-        Report report = new Report(issueDateSql, dueDateSql, member, book);
-        reportRepository.save(report);
 
+        Report report = new Report(issueDateSql, dueDateSql, member, book);
+        try {
+            reportRepository.save(report);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error issuing book: " + e.getMessage());
+        }
 
     }
-
 
 
 }
