@@ -24,9 +24,21 @@ public class Book {
     @Column(name = "qty", nullable = false)
     private int qty;
 
-    @Column(name = "photo_url")
-    private String photoUrl;
+    @Lob
+    @Column(name = "photo", columnDefinition = "LONGBLOB")
+    private byte[] photo;
 
+    @Column(name = "activestate", nullable = false)
+    private Boolean active_state = true;
+
+    // Getters and Setters
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
 
     public String getBookId() {
         return bookId;
@@ -36,21 +48,51 @@ public class Book {
         this.bookId = bookId;
     }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getTitle() {
+        return title;
+    }
 
-    public String getAuthor() { return author; }
-    public void setAuthor(String author) { this.author = author; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public String getIsbn() { return isbn; }
-    public void setIsbn(String isbn) { this.isbn = isbn; }
+    public String getAuthor() {
+        return author;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
-    public int getQty() { return qty; }
-    public void setQty(int qty) { this.qty = qty; }
+    public String getIsbn() {
+        return isbn;
+    }
 
-    public String getPhotoUrl() { return photoUrl; }
-    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public int getQty() {
+        return qty;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
+
+    public Boolean getActive_state() {
+        return active_state;
+    }
+
+    public void setActive_state(Boolean active_state) {
+        this.active_state = active_state;
+    }
 }

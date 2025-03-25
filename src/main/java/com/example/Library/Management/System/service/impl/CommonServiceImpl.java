@@ -27,18 +27,26 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void updateprofile(UpdateUserDetailsDto userDetailsDto) {
 
+        // Find the member using userid
         Member member = memberRepository.findById(userDetailsDto.getUserid())
                 .orElseThrow(() -> new RuntimeException("Member not found with ID: " + userDetailsDto.getUserid()));
 
-        Optional<User> optionalUser = userRepository.findByMemberid(member);
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
+        User user = userRepository.findByMemberid(member)
+                .orElseThrow(() -> new RuntimeException("User not found with member ID: " + userDetailsDto.getUserid()));
+
+
+        // Update the user details
+        if (userDetailsDto.getPassword() != null && !userDetailsDto.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userDetailsDto.getPassword()));
-            userRepository.save(user);
-            System.out.println("User profile updated successfully!");
-        } else {
-            throw new RuntimeException("User not found with ID: " + userDetailsDto.getUserid());
         }
+
+        if (userDetailsDto.getEmail() != null && !userDetailsDto.getEmail().isEmpty()) {
+            user.setEmail(userDetailsDto.getEmail());
+        }
+
+        userRepository.save(user);
+        System.out.println("User profile updated successfully!");
     }
+
 }

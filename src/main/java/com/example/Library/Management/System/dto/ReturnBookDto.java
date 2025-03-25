@@ -33,5 +33,12 @@ public class ReturnBookDto {
         this.recived_date = recived_date;
     }
 
-
+    @Override
+    public String toString() {
+        return "ReturnBookDto{" +
+                "memberid='" + memberid + '\'' +
+                ", bookid='" + bookid + '\'' +
+                ", recived_date=" + recived_date +
+                '}';
+    }
 }

@@ -24,17 +24,23 @@ public class ReseaveBook {
     @Column(name = "reserved_date", nullable = false)
     private Date reservedDate;
 
+    @Column(name = "state", nullable = false)
+    private Boolean state = true;
 
-    public ReseaveBook(Member member, Book book, Date reservedDate) {
-        this.member = member;
-        this.book = book;
-        this.reservedDate = reservedDate;
-    }
 
     public ReseaveBook() {
 
     }
 
+    public ReseaveBook(Member member, Book book, Date reservedDate) {
+        this.member = member;
+        this.book = book;
+        this.reservedDate = reservedDate;
+
+    }
+
+
+    // Getters and Setters
     public long getReserveId() {
         return reserveId;
     }
@@ -65,5 +71,13 @@ public class ReseaveBook {
 
     public void setReservedDate(Date reservedDate) {
         this.reservedDate = reservedDate;
+    }
+
+    public Boolean getState() {
+        return state;
+    }
+
+    public void setState(Boolean state) {
+        this.state = state;
     }
 }
