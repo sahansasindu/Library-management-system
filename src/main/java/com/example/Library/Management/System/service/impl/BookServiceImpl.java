@@ -128,8 +128,8 @@ public class BookServiceImpl implements BookService {
     public void returnBook(ReturnBookDto returnBookDto) {
 
         double penaltyCost = 0.0;
-        LocalDate dueDate=null;
-        LocalDate receivedDate = null;
+        LocalDate dueDate;
+        LocalDate receivedDate;
 
 
         // Fetch the issue details
