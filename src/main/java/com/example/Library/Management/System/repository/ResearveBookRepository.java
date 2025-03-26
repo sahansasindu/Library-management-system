@@ -7,12 +7,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.util.List;
 
 @Repository
 public interface ResearveBookRepository extends JpaRepository<ReseaveBook,Long> {
 
     @Query("SELECT r FROM ReseaveBook r WHERE r.book.id = :bookId AND r.member.id = :memberId")
     ReseaveBook findReservation(@Param("bookId") String bookId, @Param("memberId") String memberId);
+
+    @Query("SELECT r FROM ReseaveBook r WHERE r.reservedDate < :currentDate AND r.state = true")
+    List<ReseaveBook> findExpiredReservations(@Param("currentDate") Date currentDate);
 
 
 

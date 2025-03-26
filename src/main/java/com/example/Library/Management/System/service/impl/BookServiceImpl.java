@@ -13,6 +13,7 @@ import com.example.Library.Management.System.service.BookService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +35,7 @@ public class BookServiceImpl implements BookService {
     private MemberRepository memberRepository;
 
     @Autowired
-    private ResearveBookRepository researveBookRepository;
+    private ResearveBookRepository reseaveBookRepository;
 
 
     @Autowired
@@ -98,7 +99,19 @@ public class BookServiceImpl implements BookService {
 
 
 
+    @Scheduled(cron = "0 0 0 * * ?") // Runs at midnight daily
+    @Transactional
+    public void updateExpiredReservations() {
+        LocalDate today = LocalDate.now();
+        Date currentDate = Date.valueOf(today);
 
+        List<ReseaveBook> expiredReservations = reseaveBookRepository.findExpiredReservations(currentDate);
+
+        for (ReseaveBook reservation : expiredReservations) {
+            reservation.setState(false);
+            reseaveBookRepository.save(reservation);
+        }
+    }
 
 
     @Override
@@ -116,7 +129,7 @@ public class BookServiceImpl implements BookService {
 
         try {
             ReseaveBook reseaveBook = new ReseaveBook(member, book, reservedDate);
-            researveBookRepository.save(reseaveBook);
+            reseaveBookRepository.save(reseaveBook);
         } catch (DataAccessException e) {
             throw new RuntimeException("Error reserving book: " + e.getMessage());
         }
@@ -199,6 +212,23 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new RuntimeException("Book not found with ID: " + reportDto.getBook_id()));
 
 
+        if (book.getQty() <= 0) {
+            throw new RuntimeException("Book is out of stock: " + reportDto.getBook_id());
+        }
+        // Find existing reservation
+        ReseaveBook reservation = reseaveBookRepository.findReservation(reportDto.getBook_id(), reportDto.getMember_id());
+
+        if (reservation != null) {
+            // Update reservation state
+            reservation.setState(false);
+            reseaveBookRepository.save(reservation);
+        }
+
+        // Reduce book count
+        book.setQty(book.getQty() - 1);
+        bookRepository.save(book); // Save updated quantity
+
+
         Report report = new Report(issueDateSql, dueDateSql, member, book);
         try {
             reportRepository.save(report);
@@ -209,7 +239,7 @@ public class BookServiceImpl implements BookService {
     }
     @Override
     public List<ResearveBookResponseDto> getAllReservation() {
-        List<ReseaveBook> researveBookDtoList = researveBookRepository.findAll();
+        List<ReseaveBook> researveBookDtoList = reseaveBookRepository.findAll();
         return researveBookDtoList.stream()
                 .map(this::researveBookDtoTO)
                 .collect(Collectors.toList());
