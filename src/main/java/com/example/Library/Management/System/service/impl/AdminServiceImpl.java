@@ -1,8 +1,12 @@
 package com.example.Library.Management.System.service.impl;
 
 import com.example.Library.Management.System.dto.BookDto;
+import com.example.Library.Management.System.dto.ConditionDto;
 import com.example.Library.Management.System.dto.MemberDto;
+import com.example.Library.Management.System.dto.response.ConditionResponseDto;
+import com.example.Library.Management.System.entity.Condition;
 import com.example.Library.Management.System.entity.Member;
+import com.example.Library.Management.System.repository.ConditionRepository;
 import com.example.Library.Management.System.repository.MemberRepository;
 import com.example.Library.Management.System.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private ConditionRepository conditionRepository;
 
     @Override
     public void addNewMember(MemberDto memberDTO) {
@@ -36,6 +43,11 @@ public class AdminServiceImpl implements AdminService {
         return members.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    @Override
+    public void saveCondition(ConditionDto conditionDto) {
+        conditionRepository.save(toCondition(conditionDto));
+    }
+
     private MemberDto mapToDto(Member member){
         MemberDto memberDto=new MemberDto();
         memberDto.setMember_id(member.getMember_id());
@@ -47,4 +59,21 @@ public class AdminServiceImpl implements AdminService {
         memberDto.setPhone_no(member.getPhone_no());
         return memberDto;
     }
+
+    private Condition toCondition(ConditionDto conditionDto){
+        if(conditionDto==null)throw new RuntimeException("null");
+        return Condition.builder()
+                .entry_payment(conditionDto.getEntry_payment())
+                .entry_payment(conditionDto.getPenalty_cost() )
+                .build();
+    }
+
+    private ConditionResponseDto Conditionto(Condition condition) {
+        if (condition == null) throw new RuntimeException("null");
+        return ConditionResponseDto.builder()
+                .entry_payment(condition.getEntry_payment())
+                .penalty_cost(condition.getPenalty_cost())
+                .build();
+    }
+
 }

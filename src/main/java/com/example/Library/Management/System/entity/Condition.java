@@ -1,9 +1,12 @@
 package com.example.Library.Management.System.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
+@Builder
 @Entity
 @Table(name="conditions")
+
 public class Condition {
 
     @Id
@@ -16,6 +19,10 @@ public class Condition {
 
     @Column(name="penalty_cost")
     private double penalty_cost;
+
+    public Condition() {
+
+    }
 
     public double getEntry_payment() {
         return entry_payment;
