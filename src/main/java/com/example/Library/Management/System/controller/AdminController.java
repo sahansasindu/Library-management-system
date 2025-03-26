@@ -1,8 +1,7 @@
 package com.example.Library.Management.System.controller;
 
-import com.example.Library.Management.System.dto.ConditionDto;
+import com.example.Library.Management.System.dto.request.ConditionDto;
 import com.example.Library.Management.System.dto.MemberDto;
-import com.example.Library.Management.System.entity.Condition;
 import com.example.Library.Management.System.service.impl.AdminServiceImpl;
 import com.example.Library.Management.System.utill.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;

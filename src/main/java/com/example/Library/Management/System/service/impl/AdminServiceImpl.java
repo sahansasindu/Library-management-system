@@ -1,7 +1,6 @@
 package com.example.Library.Management.System.service.impl;
 
-import com.example.Library.Management.System.dto.BookDto;
-import com.example.Library.Management.System.dto.ConditionDto;
+import com.example.Library.Management.System.dto.request.ConditionDto;
 import com.example.Library.Management.System.dto.MemberDto;
 import com.example.Library.Management.System.dto.response.ConditionResponseDto;
 import com.example.Library.Management.System.entity.Condition;
@@ -43,10 +42,7 @@ public class AdminServiceImpl implements AdminService {
         return members.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-    @Override
-    public void saveCondition(ConditionDto conditionDto) {
-        conditionRepository.save(toCondition(conditionDto));
-    }
+
 
     private MemberDto mapToDto(Member member){
         MemberDto memberDto=new MemberDto();
@@ -60,11 +56,17 @@ public class AdminServiceImpl implements AdminService {
         return memberDto;
     }
 
-    private Condition toCondition(ConditionDto conditionDto){
-        if(conditionDto==null)throw new RuntimeException("null");
+    @Override
+    public void saveCondition(ConditionDto conditionDto) {
+        conditionRepository.save(toCondition(conditionDto));
+    }
+
+    private Condition toCondition(ConditionDto conditionDto) {
+        if (conditionDto == null) throw new RuntimeException("ConditionDto is null");
+
         return Condition.builder()
                 .entry_payment(conditionDto.getEntry_payment())
-                .entry_payment(conditionDto.getPenalty_cost() )
+                .penalty_cost(conditionDto.getPenalty_cost())
                 .build();
     }
 

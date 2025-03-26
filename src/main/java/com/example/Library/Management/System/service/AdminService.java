@@ -1,6 +1,6 @@
 package com.example.Library.Management.System.service;
 
-import com.example.Library.Management.System.dto.ConditionDto;
+import com.example.Library.Management.System.dto.request.ConditionDto;
 import com.example.Library.Management.System.dto.MemberDto;
 
 import java.util.List;

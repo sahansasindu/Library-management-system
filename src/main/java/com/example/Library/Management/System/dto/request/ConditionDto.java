@@ -1,4 +1,4 @@
-package com.example.Library.Management.System.dto;
+package com.example.Library.Management.System.dto.request;
 
 import jakarta.persistence.Column;
 import lombok.Builder;
