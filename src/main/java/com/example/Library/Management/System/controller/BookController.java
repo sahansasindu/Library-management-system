@@ -4,8 +4,10 @@ import com.example.Library.Management.System.dto.BookDto;
 import com.example.Library.Management.System.dto.ReportDto;
 import com.example.Library.Management.System.dto.ResearveBookDto;
 import com.example.Library.Management.System.dto.ReturnBookDto;
+import com.example.Library.Management.System.dto.request.ResearveBookResponseDto;
 import com.example.Library.Management.System.entity.ReseaveBook;
 import com.example.Library.Management.System.service.BookService;
+import com.example.Library.Management.System.utill.StandardResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -62,6 +64,14 @@ public class BookController {
     @PostMapping("/borrowbookrecoard")
     public void borrowBook(@RequestBody ReportDto reportDto){
        bookService.issueBookHandle(reportDto);
+    }
+
+    @GetMapping("/reservationdetails")
+    public ResponseEntity<StandardResponse> getreservebook(){
+        List<ResearveBookResponseDto> reservationdetails=bookService.getAllReservation();
+        return ResponseEntity.ok(
+                new StandardResponse(200,"Fetched all members successfully",reservationdetails)
+        );
     }
 
 }

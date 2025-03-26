@@ -4,20 +4,17 @@ import com.example.Library.Management.System.dto.BookDto;
 import com.example.Library.Management.System.dto.ReportDto;
 import com.example.Library.Management.System.dto.ResearveBookDto;
 import com.example.Library.Management.System.dto.ReturnBookDto;
+import com.example.Library.Management.System.dto.request.ResearveBookResponseDto;
 import com.example.Library.Management.System.entity.*;
 import com.example.Library.Management.System.repository.*;
 import com.example.Library.Management.System.service.BookService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Base64;
@@ -173,7 +170,6 @@ public class BookServiceImpl implements BookService {
         }
 
 
-
     }
 
 
@@ -208,6 +204,23 @@ public class BookServiceImpl implements BookService {
             throw new RuntimeException("Error issuing book: " + e.getMessage());
         }
 
+    }
+    @Override
+    public List<ResearveBookResponseDto> getAllReservation() {
+        List<ReseaveBook> researveBookDtoList = researveBookRepository.findAll();
+        return researveBookDtoList.stream()
+                .map(this::researveBookDto)
+                .collect(Collectors.toList());
+    }
+
+    private ResearveBookResponseDto researveBookDto(ReseaveBook reseaveBook) {
+        ResearveBookResponseDto resivebookDto = new ResearveBookResponseDto();
+        resivebookDto.setMember_id(reseaveBook.getMember().getMember_id());
+        resivebookDto.setBook_id(reseaveBook.getBook().getBookId());
+        resivebookDto.setReservedDate(reseaveBook.getReservedDate());
+        resivebookDto.setState(reseaveBook.getState());
+
+        return resivebookDto;
     }
 
 

@@ -6,6 +6,7 @@ import com.example.Library.Management.System.dto.BookDto;
 import com.example.Library.Management.System.dto.ReportDto;
 import com.example.Library.Management.System.dto.ResearveBookDto;
 import com.example.Library.Management.System.dto.ReturnBookDto;
+import com.example.Library.Management.System.dto.request.ResearveBookResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -22,4 +23,7 @@ public interface BookService {
     public void returnBook(ReturnBookDto returnBookDto);
 
     public void issueBookHandle(ReportDto reportDto);
+
+
+    List<ResearveBookResponseDto> getAllReservation();
 }
