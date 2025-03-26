@@ -47,9 +47,13 @@ public class BookController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<List<BookDto>> getAllBooks() {
-        return ResponseEntity.ok(bookService.getAllBooks());
+    public ResponseEntity<StandardResponse> getAllBooks() {
+        List<BookDto> books = bookService.getAllBooks();
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Fetched all books successfully", books)
+        );
     }
+
 
     @PostMapping("/reserve")
     public void reserveBook(@RequestBody ResearveBookDto researveBookDto){
