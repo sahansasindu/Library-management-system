@@ -211,21 +211,12 @@ public class BookServiceImpl implements BookService {
     public List<ResearveBookResponseDto> getAllReservation() {
         List<ReseaveBook> researveBookDtoList = researveBookRepository.findAll();
         return researveBookDtoList.stream()
-                .map(this::researveBookDto)
+                .map(this::researveBookDtoTO)
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<ReturnBookResponseDto> getAllReturnBook() {
-        return null;
-    }
 
-    @Override
-    public List<IssueBookResponseDto> getAllIssuedBook() {
-        return null;
-    }
-
-    private ResearveBookResponseDto researveBookDto(ReseaveBook reseaveBook) {
+    private ResearveBookResponseDto researveBookDtoTO(ReseaveBook reseaveBook) {
         ResearveBookResponseDto resivebookDto = new ResearveBookResponseDto();
         resivebookDto.setMember_id(reseaveBook.getMember().getMember_id());
         resivebookDto.setBook_id(reseaveBook.getBook().getBookId());
@@ -234,6 +225,43 @@ public class BookServiceImpl implements BookService {
 
         return resivebookDto;
     }
+
+    @Override
+    public List<ReturnBookResponseDto> getAllReturnBook() {
+        List<ReturnBook>returnBookList=returnBookRepository.findAll();
+        return returnBookList.stream()
+                .map(this::returnBookResponseDtoTo)
+                .collect(Collectors.toList());
+    }
+
+    private ReturnBookResponseDto returnBookResponseDtoTo(ReturnBook returnBook){
+        ReturnBookResponseDto responseDto=new ReturnBookResponseDto();
+        responseDto.setBook_id(returnBook.getBook().getBookId());
+        responseDto.setMember_id(returnBook.getMember().getMember_id());
+        responseDto.setPenalty_amount(responseDto.getPenalty_amount());
+        responseDto.setRecived_date(responseDto.getRecived_date());
+        return responseDto;
+    }
+
+    @Override
+    public List<IssueBookResponseDto> getAllIssuedBook() {
+        List<Report>reportList=reportRepository.findAll();
+        return reportList.stream()
+                .map(this::issueBookResponseDtoTO)
+                .collect(Collectors.toList());
+    }
+
+    private IssueBookResponseDto issueBookResponseDtoTO(Report report){
+        IssueBookResponseDto issueBookResponseDto=new IssueBookResponseDto();
+        issueBookResponseDto.setBook_id(report.getBook().getBookId());
+        issueBookResponseDto.setMember_id(report.getMember().getMember_id());
+        issueBookResponseDto.setIssueDate(report.getIssueDate());
+        issueBookResponseDto.setDueDate(report.getDueDate());
+        return issueBookResponseDto;
+
+    }
+
+
 
 
 }
