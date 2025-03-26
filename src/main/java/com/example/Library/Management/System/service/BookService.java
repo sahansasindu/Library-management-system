@@ -3,10 +3,12 @@ package com.example.Library.Management.System.service;
 
 
 import com.example.Library.Management.System.dto.BookDto;
-import com.example.Library.Management.System.dto.ReportDto;
-import com.example.Library.Management.System.dto.ResearveBookDto;
-import com.example.Library.Management.System.dto.ReturnBookDto;
-import com.example.Library.Management.System.dto.request.ResearveBookResponseDto;
+import com.example.Library.Management.System.dto.request.ReportDto;
+import com.example.Library.Management.System.dto.request.ResearveBookDto;
+import com.example.Library.Management.System.dto.request.ReturnBookDto;
+import com.example.Library.Management.System.dto.response.IssueBookResponseDto;
+import com.example.Library.Management.System.dto.response.ResearveBookResponseDto;
+import com.example.Library.Management.System.dto.response.ReturnBookResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,4 +28,8 @@ public interface BookService {
 
 
     List<ResearveBookResponseDto> getAllReservation();
+
+    List<ReturnBookResponseDto> getAllReturnBook();
+
+    List<IssueBookResponseDto> getAllIssuedBook();
 }

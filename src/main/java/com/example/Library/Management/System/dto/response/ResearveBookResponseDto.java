@@ -1,10 +1,4 @@
-package com.example.Library.Management.System.dto.request;
-
-import com.example.Library.Management.System.entity.Book;
-import com.example.Library.Management.System.entity.Member;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+package com.example.Library.Management.System.dto.response;
 
 import java.sql.Date;
 

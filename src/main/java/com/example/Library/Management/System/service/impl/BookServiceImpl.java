@@ -1,10 +1,12 @@
 package com.example.Library.Management.System.service.impl;
 
 import com.example.Library.Management.System.dto.BookDto;
-import com.example.Library.Management.System.dto.ReportDto;
-import com.example.Library.Management.System.dto.ResearveBookDto;
-import com.example.Library.Management.System.dto.ReturnBookDto;
-import com.example.Library.Management.System.dto.request.ResearveBookResponseDto;
+import com.example.Library.Management.System.dto.request.ReportDto;
+import com.example.Library.Management.System.dto.request.ResearveBookDto;
+import com.example.Library.Management.System.dto.request.ReturnBookDto;
+import com.example.Library.Management.System.dto.response.IssueBookResponseDto;
+import com.example.Library.Management.System.dto.response.ResearveBookResponseDto;
+import com.example.Library.Management.System.dto.response.ReturnBookResponseDto;
 import com.example.Library.Management.System.entity.*;
 import com.example.Library.Management.System.repository.*;
 import com.example.Library.Management.System.service.BookService;
@@ -211,6 +213,16 @@ public class BookServiceImpl implements BookService {
         return researveBookDtoList.stream()
                 .map(this::researveBookDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReturnBookResponseDto> getAllReturnBook() {
+        return null;
+    }
+
+    @Override
+    public List<IssueBookResponseDto> getAllIssuedBook() {
+        return null;
     }
 
     private ResearveBookResponseDto researveBookDto(ReseaveBook reseaveBook) {
