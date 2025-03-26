@@ -30,46 +30,55 @@ public class BookController {
     private static final long MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
     @PostMapping(value = "/add", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<?> addBook(
+    public ResponseEntity<StandardResponse> addBook(
             @RequestPart("book") String bookDTO,
             @RequestPart("file") MultipartFile file) throws IOException {
 
         if (file.getSize() > MAX_FILE_SIZE) {
-            //return ResponseEntity.badRequest().body(Collections.singletonMap("error", "File size exceeds 2MB limit"));
+            return ResponseEntity.badRequest()
+                    .body(new StandardResponse(400, "File size exceeds 2MB limit", null));
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
         BookDto bookDto = objectMapper.readValue(bookDTO, BookDto.class);
 
         BookDto savedBook = bookService.addBook(bookDto, file);
-        return ResponseEntity.ok(savedBook);
+
+        return ResponseEntity.ok(new StandardResponse(200, "Book added successfully", savedBook));
     }
 
 
     @GetMapping("/all")
-    public ResponseEntity<StandardResponse> getAllBooks() {
-        List<BookDto> books = bookService.getAllBooks();
-        return ResponseEntity.ok(
-                new StandardResponse(200, "Fetched all books successfully", books)
-        );
+    public ResponseEntity<List<BookDto>> getAllBooks() {
+        return ResponseEntity.ok(bookService.getAllBooks());
     }
 
 
     @PostMapping("/reserve")
-    public void reserveBook(@RequestBody ResearveBookDto researveBookDto){
+    public ResponseEntity<StandardResponse> reserveBook(@RequestBody ResearveBookDto researveBookDto) {
         bookService.reseaveBook(researveBookDto);
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Book reserved successfully", researveBookDto.getBook_id())
+        );
     }
 
     @PostMapping("/returnbook")
-    public void returnBook(@RequestBody ReturnBookDto returnBookDto){
+    public ResponseEntity<StandardResponse> returnBook(@RequestBody ReturnBookDto returnBookDto) {
         bookService.returnBook(returnBookDto);
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Book returned successfully", returnBookDto.getBookid())
+        );
     }
 
 
     @PostMapping("/borrowbookrecoard")
-    public void borrowBook(@RequestBody ReportDto reportDto){
-       bookService.issueBookHandle(reportDto);
+    public ResponseEntity<StandardResponse> borrowBook(@RequestBody ReportDto reportDto) {
+        bookService.issueBookHandle(reportDto);
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Book borrowed successfully", reportDto.getBook_id())
+        );
     }
+
 
     @GetMapping("/reservationdetails")
     public ResponseEntity<StandardResponse> getReserveBook(){
