@@ -1,5 +1,6 @@
 package com.example.Library.Management.System.controller;
 
+import com.example.Library.Management.System.dto.request.ConditionDto;
 import com.example.Library.Management.System.dto.MemberDto;
 import com.example.Library.Management.System.service.impl.AdminServiceImpl;
 import com.example.Library.Management.System.utill.StandardResponse;
@@ -27,12 +28,20 @@ public class AdminController {
         );
     }
 
-
     @GetMapping("/getallmembers")
     public ResponseEntity<StandardResponse> getAllMembers() {
         List<MemberDto> members = adminService.getAllMembers();
         return ResponseEntity.ok(
                 new StandardResponse(200, "Fetched all members successfully", members)
+        );
+    }
+
+    @PostMapping("/addinformation")
+    public ResponseEntity<StandardResponse>addInformattion(@RequestBody ConditionDto condition){
+        adminService.saveCondition(condition);
+        return new ResponseEntity<>(
+                new StandardResponse(201,"data add sucessfully",null),
+                HttpStatus.CREATED
         );
     }
 

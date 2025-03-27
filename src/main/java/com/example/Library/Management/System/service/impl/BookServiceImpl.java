@@ -1,21 +1,23 @@
 package com.example.Library.Management.System.service.impl;
 
 import com.example.Library.Management.System.dto.BookDto;
-import com.example.Library.Management.System.dto.ReportDto;
-import com.example.Library.Management.System.dto.ResearveBookDto;
-import com.example.Library.Management.System.dto.ReturnBookDto;
+import com.example.Library.Management.System.dto.request.ReportDto;
+import com.example.Library.Management.System.dto.request.ResearveBookDto;
+import com.example.Library.Management.System.dto.request.ReturnBookDto;
+import com.example.Library.Management.System.dto.response.IssueBookResponseDto;
+import com.example.Library.Management.System.dto.response.ResearveBookResponseDto;
+import com.example.Library.Management.System.dto.response.ReturnBookResponseDto;
 import com.example.Library.Management.System.entity.*;
 import com.example.Library.Management.System.repository.*;
 import com.example.Library.Management.System.service.BookService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Base64;
@@ -33,7 +35,7 @@ public class BookServiceImpl implements BookService {
     private MemberRepository memberRepository;
 
     @Autowired
-    private ResearveBookRepository researveBookRepository;
+    private ResearveBookRepository reseaveBookRepository;
 
 
     @Autowired
@@ -47,25 +49,29 @@ public class BookServiceImpl implements BookService {
     private ReportRepository reportRepository;
 
 
-
-
-
     @Override
-    public BookDto addBook(BookDto bookDto, MultipartFile file) throws IOException {
-        Book book = new Book();
-        book.setBookId(bookDto.getBookid());
-        book.setTitle(bookDto.getTitle());
-        book.setAuthor(bookDto.getAuthor());
-        book.setIsbn(bookDto.getIsbn());
-        book.setCategory(bookDto.getCategory());
-        book.setQty(bookDto.getQty());
+    @Transactional
+    public BookDto addBook(BookDto bookDto, MultipartFile file) {
+        try {
+            Book book = new Book();
+            book.setBookId(bookDto.getBookid());
+            book.setTitle(bookDto.getTitle());
+            book.setAuthor(bookDto.getAuthor());
+            book.setIsbn(bookDto.getIsbn());
+            book.setCategory(bookDto.getCategory());
+            book.setQty(bookDto.getQty());
 
-        if (file != null && !file.isEmpty()) {
-            book.setPhoto(file.getBytes()); // Store binary data
+            if (file != null && !file.isEmpty()) {
+                book.setPhoto(file.getBytes());
+            }
+
+            book = bookRepository.save(book);
+            return mapToDto(book);
+        } catch (IOException e) {
+            throw new RuntimeException("Error processing file: " + e.getMessage());
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Database error: " + e.getMessage());
         }
-
-        book = bookRepository.save(book);
-        return mapToDto(book);
     }
 
     @Override
@@ -93,7 +99,31 @@ public class BookServiceImpl implements BookService {
 
 
 
+    @Scheduled(cron = "0 0 0 * * ?") // Runs at midnight daily
+    @Transactional
+    public void updateExpiredReservations() {
+        LocalDate today = LocalDate.now();
+        Date currentDate = Date.valueOf(today);
 
+        List<ReseaveBook> expiredReservations = reseaveBookRepository.findExpiredReservations(currentDate);
+
+        for (ReseaveBook reservation : expiredReservations) {
+            reservation.setState(false);
+
+            Book book = reservation.getBook();
+
+            if (book != null) {
+
+                if (book.getQty() > 0) {
+                    book.setQty(book.getQty() - 1);
+                }
+                bookRepository.save(book);
+            }
+
+
+            reseaveBookRepository.save(reservation);
+        }
+    }
 
 
     @Override
@@ -109,9 +139,12 @@ public class BookServiceImpl implements BookService {
         LocalDate currentDate = LocalDate.now();
         Date reservedDate = Date.valueOf(currentDate);
 
-        ReseaveBook reseaveBook = new ReseaveBook(member, book,reservedDate);
-        researveBookRepository.save(reseaveBook);
-
+        try {
+            ReseaveBook reseaveBook = new ReseaveBook(member, book, reservedDate);
+            reseaveBookRepository.save(reseaveBook);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error reserving book: " + e.getMessage());
+        }
 
     }
 
@@ -119,8 +152,8 @@ public class BookServiceImpl implements BookService {
     public void returnBook(ReturnBookDto returnBookDto) {
 
         double penaltyCost = 0.0;
-        LocalDate dueDate=null;
-        LocalDate receivedDate = null;
+        LocalDate dueDate;
+        LocalDate receivedDate;
 
 
         // Fetch the issue details
@@ -159,8 +192,9 @@ public class BookServiceImpl implements BookService {
 
         } else {
             System.out.println("No reservation found.");
-        }
+            throw new RuntimeException("No issue record found for book ID: " + returnBookDto.getBookid() + " and member ID: " + returnBookDto.getMemberid());
 
+        }
 
 
     }
@@ -174,7 +208,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void issueBookHandle(ReportDto reportDto) {
 
-        // Get the current date
+
         LocalDate currentDate = LocalDate.now();
         LocalDate dueDate = currentDate.plusDays(30);
 
@@ -182,19 +216,93 @@ public class BookServiceImpl implements BookService {
         Date issueDateSql = Date.valueOf(currentDate);
         Date dueDateSql = Date.valueOf(dueDate);
 
-        // Fetch Member and Book from database
+
         Member member = memberRepository.findById(reportDto.getMember_id())
                 .orElseThrow(() -> new RuntimeException("Member not found with ID: " + reportDto.getMember_id()));
 
         Book book = bookRepository.findByBookId(reportDto.getBook_id())
                 .orElseThrow(() -> new RuntimeException("Book not found with ID: " + reportDto.getBook_id()));
 
-        // Create and save the report
-        Report report = new Report(issueDateSql, dueDateSql, member, book);
-        reportRepository.save(report);
 
+        if (book.getQty() <= 0) {
+            throw new RuntimeException("Book is out of stock: " + reportDto.getBook_id());
+        }
+        // Find existing reservation
+        ReseaveBook reservation = reseaveBookRepository.findReservation(reportDto.getBook_id(), reportDto.getMember_id());
+
+        if (reservation != null) {
+            // Update reservation state
+            reservation.setState(false);
+            reseaveBookRepository.save(reservation);
+        }
+
+        // Reduce book count
+        book.setQty(book.getQty() - 1);
+        bookRepository.save(book); // Save updated quantity
+
+
+        Report report = new Report(issueDateSql, dueDateSql, member, book);
+        try {
+            reportRepository.save(report);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error issuing book: " + e.getMessage());
+        }
 
     }
+    @Override
+    public List<ResearveBookResponseDto> getAllReservation() {
+        List<ReseaveBook> researveBookDtoList = reseaveBookRepository.findAll();
+        return researveBookDtoList.stream()
+                .map(this::researveBookDtoTO)
+                .collect(Collectors.toList());
+    }
+
+
+    private ResearveBookResponseDto researveBookDtoTO(ReseaveBook reseaveBook) {
+        ResearveBookResponseDto resivebookDto = new ResearveBookResponseDto();
+        resivebookDto.setMember_id(reseaveBook.getMember().getMember_id());
+        resivebookDto.setBook_id(reseaveBook.getBook().getBookId());
+        resivebookDto.setReservedDate(reseaveBook.getReservedDate());
+        resivebookDto.setState(reseaveBook.getState());
+
+        return resivebookDto;
+    }
+
+    @Override
+    public List<ReturnBookResponseDto> getAllReturnBook() {
+        List<ReturnBook>returnBookList=returnBookRepository.findAll();
+        return returnBookList.stream()
+                .map(this::returnBookResponseDtoTo)
+                .collect(Collectors.toList());
+    }
+
+    private ReturnBookResponseDto returnBookResponseDtoTo(ReturnBook returnBook){
+        ReturnBookResponseDto responseDto=new ReturnBookResponseDto();
+        responseDto.setBook_id(returnBook.getBook().getBookId());
+        responseDto.setMember_id(returnBook.getMember().getMember_id());
+        responseDto.setPenalty_amount(responseDto.getPenalty_amount());
+        responseDto.setRecived_date(responseDto.getRecived_date());
+        return responseDto;
+    }
+
+    @Override
+    public List<IssueBookResponseDto> getAllIssuedBook() {
+        List<Report>reportList=reportRepository.findAll();
+        return reportList.stream()
+                .map(this::issueBookResponseDtoTO)
+                .collect(Collectors.toList());
+    }
+
+    private IssueBookResponseDto issueBookResponseDtoTO(Report report){
+        IssueBookResponseDto issueBookResponseDto=new IssueBookResponseDto();
+        issueBookResponseDto.setBook_id(report.getBook().getBookId());
+        issueBookResponseDto.setMember_id(report.getMember().getMember_id());
+        issueBookResponseDto.setIssueDate(report.getIssueDate());
+        issueBookResponseDto.setDueDate(report.getDueDate());
+        return issueBookResponseDto;
+
+    }
+
 
 
 
