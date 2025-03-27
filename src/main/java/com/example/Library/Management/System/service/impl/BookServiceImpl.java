@@ -109,6 +109,18 @@ public class BookServiceImpl implements BookService {
 
         for (ReseaveBook reservation : expiredReservations) {
             reservation.setState(false);
+
+            Book book = reservation.getBook();
+
+            if (book != null) {
+
+                if (book.getQty() > 0) {
+                    book.setQty(book.getQty() - 1);
+                }
+                bookRepository.save(book);
+            }
+
+
             reseaveBookRepository.save(reservation);
         }
     }
