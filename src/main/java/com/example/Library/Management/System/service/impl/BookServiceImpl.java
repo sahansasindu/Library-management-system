@@ -280,8 +280,8 @@ public class BookServiceImpl implements BookService {
         ReturnBookResponseDto responseDto=new ReturnBookResponseDto();
         responseDto.setBook_id(returnBook.getBook().getBookId());
         responseDto.setMember_id(returnBook.getMember().getMember_id());
-        responseDto.setPenalty_amount(responseDto.getPenalty_amount());
-        responseDto.setRecived_date(responseDto.getRecived_date());
+        responseDto.setPenalty_amount(returnBook.getPenalty_amount());
+        responseDto.setRecived_date(returnBook.getRecived_date());
         return responseDto;
     }
 
@@ -303,7 +303,7 @@ public class BookServiceImpl implements BookService {
 
     }
 
-    //sdfs
+
 
 
 
