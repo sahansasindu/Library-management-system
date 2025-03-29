@@ -30,6 +30,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/demo-controller/getadmin","/api/v1/demo-controller/adduser","/api/v1/admin/adduser","/api/books/reserve","/api/books/returnbook","/api/books/borrowbookrecoard").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/admin/getallmembers","/api/books/reservationdetails","/api/books/reservationdetails","/api/books/issueBookdetails","/api/books/returnbookdetails","/api/v1/admin/addinformation").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/admin/getuseraccount","api/v1/admin/{id}").hasAuthority("ADMIN")
                         .requestMatchers("http://localhost:8080/api/v1/demo-controller/getuser").hasAuthority("USER")
                         .requestMatchers("/api/v1/auth/updateprofile","/api/v1/admin/getinformation").hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/authenticate","/api/books/all","/api/books/add")

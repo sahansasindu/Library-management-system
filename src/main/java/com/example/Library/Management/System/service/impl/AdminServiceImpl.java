@@ -3,15 +3,19 @@ package com.example.Library.Management.System.service.impl;
 import com.example.Library.Management.System.dto.request.ConditionDto;
 import com.example.Library.Management.System.dto.MemberDto;
 import com.example.Library.Management.System.dto.response.ConditionResponseDto;
+import com.example.Library.Management.System.dto.response.UserResponseDto;
 import com.example.Library.Management.System.entity.Condition;
 import com.example.Library.Management.System.entity.Member;
+import com.example.Library.Management.System.entity.User;
 import com.example.Library.Management.System.repository.ConditionRepository;
 import com.example.Library.Management.System.repository.MemberRepository;
+import com.example.Library.Management.System.repository.UserRepository;
 import com.example.Library.Management.System.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +27,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private ConditionRepository conditionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public void addNewMember(MemberDto memberDTO) {
@@ -67,6 +74,41 @@ public class AdminServiceImpl implements AdminService {
         return conditions.stream()
                 .map(this::Conditionto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserResponseDto> geyAccountDetails() {
+        List<User>user=userRepository.findAll();
+        return user.stream()
+                .map(this::Userto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean updateAccountState(String memberId, boolean newState) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found with ID: " + memberId));
+
+        Optional<User> userOptional = userRepository.findByMemberid(member);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setActive_state(newState);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
+
+    private UserResponseDto Userto(User user) {
+        if (user == null) throw new RuntimeException("null");
+        return UserResponseDto.builder()
+                .memberid(user.getMemberid().getMember_id())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .active_state(user.getActive_state())
+                .build();
     }
 
 
