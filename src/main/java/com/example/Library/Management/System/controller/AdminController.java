@@ -2,6 +2,7 @@ package com.example.Library.Management.System.controller;
 
 import com.example.Library.Management.System.dto.request.ConditionDto;
 import com.example.Library.Management.System.dto.MemberDto;
+import com.example.Library.Management.System.dto.response.ConditionResponseDto;
 import com.example.Library.Management.System.service.impl.AdminServiceImpl;
 import com.example.Library.Management.System.utill.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,14 @@ public class AdminController {
         return new ResponseEntity<>(
                 new StandardResponse(201,"data add sucessfully",null),
                 HttpStatus.CREATED
+        );
+    }
+
+    @GetMapping("/getinformation")
+    public ResponseEntity<StandardResponse>getInformation(){
+        List<ConditionResponseDto>condition=adminService.getCondition();
+        return ResponseEntity.ok(
+                new StandardResponse(200,"Fetch all details",condition)
         );
     }
 

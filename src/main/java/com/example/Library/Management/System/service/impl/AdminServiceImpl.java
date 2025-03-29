@@ -61,6 +61,15 @@ public class AdminServiceImpl implements AdminService {
         conditionRepository.save(toCondition(conditionDto));
     }
 
+    @Override
+    public List<ConditionResponseDto> getCondition() {
+        List<Condition> conditions = conditionRepository.findAll();
+        return conditions.stream()
+                .map(this::Conditionto)
+                .collect(Collectors.toList());
+    }
+
+
     private Condition toCondition(ConditionDto conditionDto) {
         if (conditionDto == null) throw new RuntimeException("ConditionDto is null");
 
