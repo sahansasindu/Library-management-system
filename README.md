@@ -9,7 +9,7 @@ Authentication: Secure login for administrators and members.
 Reports: Generate reports on books, members, and loan status.
 
 🚀 Project Installation Guide
-📌 Prerequisites
+<br>📌 Prerequisites
 Ensure you have the following installed before proceeding:
 
 Java JDK 17+ (for Spring Boot projects)
