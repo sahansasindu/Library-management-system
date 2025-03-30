@@ -55,6 +55,7 @@ Request Body:
     "password": "password123",
     "role": "ADMIN"
 }
+</br></br>
 ✅ Login
 After registration, verify the account by logging in at:
 POST http://localhost:8080/api/v1/auth/authenticate
