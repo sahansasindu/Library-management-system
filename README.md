@@ -65,7 +65,7 @@ POST http://localhost:8080/api/v1/auth/authenticate
     "password": "password123"
 }
 
-if we can sucessfully login we can get output as
+if we can sucessfully login we can get output as</br>
 {
     "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzQzMzUzNzg4LCJleHAiOjE3NDM0NDAxODh9.lC82vsqkAqqYpIkVkpoLN4SyUNBaCg2_66yBKKBSesE",
     "role": "ADMIN",
