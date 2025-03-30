@@ -43,7 +43,7 @@ Request Body:
     "phone_no": "0712345678"
 }
 
-🔑 Creating an Account
+🔑 Creating an Account</br>
 After adding a member, you can create an account.
 
 Endpoint: POST http://localhost:8080/api/v1/auth/register
