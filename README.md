@@ -12,8 +12,8 @@ Reports: Generate reports on books, members, and loan status.
 <br>📌 Prerequisites
 Ensure you have the following installed before proceeding:
 
-Java JDK 17+ (for Spring Boot projects)
-MySQL
+Java JDK 17+ (for Spring Boot projects)</br>
+MySQL</br
 Postman
 
 ⚙️ Backend Setup
