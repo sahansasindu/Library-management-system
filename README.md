@@ -22,9 +22,9 @@ Navigate to Backend Directory
 Configure Environment Variables:
 update application.properties / application.yml.
 
-Example for MySQL:
-Edit
-spring.datasource.username=root
+Example for MySQL:</br>
+Edit</br>
+spring.datasource.username=root</br>
 spring.datasource.password=your_password
 
 🛠️ Adding a Member
