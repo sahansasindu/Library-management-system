@@ -13,7 +13,7 @@ Reports: Generate reports on books, members, and loan status.
 Ensure you have the following installed before proceeding:
 
 Java JDK 17+ (for Spring Boot projects)</br>
-MySQL</br
+MySQL</br>
 Postman
 
 ⚙️ Backend Setup
