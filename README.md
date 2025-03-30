@@ -20,7 +20,7 @@ Postman
 Navigate to Backend Directory
 
 Configure Environment Variables:
-update application.properties / application.yml.
+update application.properties
 
 Example for MySQL:</br>
 Edit</br>
