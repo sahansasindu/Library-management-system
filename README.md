@@ -84,4 +84,3 @@ if we can sucessfully login we can get output as
  Using the Token for Further API Requests
      Authorization: Bearer YOUR_ACCESS_TOKEN
 
-give me as html
