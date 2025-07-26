@@ -8,6 +8,8 @@ Loan Management: Issue and return books, track due dates, and manage overdue boo
 Authentication: Secure login for administrators and members.
 Reports: Generate reports on books, members, and loan status.
 
+FRONT END(ANGULAR):https://github.com/sahansasindu/library-management-system-frontend-
+
 🚀 Project Installation Guide</br>
 <br>📌 Prerequisites
 Ensure you have the following installed before proceeding:
