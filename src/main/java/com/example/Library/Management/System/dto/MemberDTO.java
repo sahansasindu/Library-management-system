@@ -2,7 +2,7 @@ package com.example.Library.Management.System.dto;
 
 import java.sql.Date;
 
-public class MemberDto {
+public class MemberDTO {
 
     private String member_id;
     private String first_name;

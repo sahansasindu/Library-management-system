@@ -1,7 +1,7 @@
 package com.example.Library.Management.System.service.impl;
 
 import com.example.Library.Management.System.dto.request.ConditionDto;
-import com.example.Library.Management.System.dto.MemberDto;
+import com.example.Library.Management.System.dto.MemberDTO;
 import com.example.Library.Management.System.dto.response.ConditionResponseDto;
 import com.example.Library.Management.System.entity.Condition;
 import com.example.Library.Management.System.entity.Member;
@@ -25,7 +25,7 @@ public class AdminServiceImpl implements AdminService {
     private ConditionRepository conditionRepository;
 
     @Override
-    public void addNewMember(MemberDto memberDTO) {
+    public void addNewMember(MemberDTO memberDTO) {
         Member member=new Member(memberDTO.getMember_id(),
                 memberDTO.getFirst_name(),
                 memberDTO.getLast_name(),
@@ -37,15 +37,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<MemberDto> getAllMembers() {
+    public List<MemberDTO> getAllMembers() {
         List<Member>members=memberRepository.findAll();
         return members.stream().map(this::mapToDto).collect(Collectors.toList());
     }
-
-
-
-    private MemberDto mapToDto(Member member){
-        MemberDto memberDto=new MemberDto();
+    
+    private MemberDTO mapToDto(Member member){
+        MemberDTO memberDto=new MemberDTO();
         memberDto.setMember_id(member.getMember_id());
         memberDto.setFirst_name(member.getFirst_name());
         memberDto.setLast_name(member.getLast_name());

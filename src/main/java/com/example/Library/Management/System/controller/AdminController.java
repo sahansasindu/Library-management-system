@@ -1,7 +1,7 @@
 package com.example.Library.Management.System.controller;
 
 import com.example.Library.Management.System.dto.request.ConditionDto;
-import com.example.Library.Management.System.dto.MemberDto;
+import com.example.Library.Management.System.dto.MemberDTO;
 import com.example.Library.Management.System.service.impl.AdminServiceImpl;
 import com.example.Library.Management.System.utill.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class AdminController {
     private AdminServiceImpl adminService;
 
     @PostMapping("/adduser")
-    public ResponseEntity<StandardResponse> addUserDetails(@RequestBody MemberDto memberDTO){
+    public ResponseEntity<StandardResponse> addUserDetails(@RequestBody MemberDTO memberDTO){
         adminService.addNewMember(memberDTO);
         return new ResponseEntity<>(
                 new StandardResponse(201,"member was save",memberDTO.getFirst_name()),
@@ -30,7 +30,7 @@ public class AdminController {
 
     @GetMapping("/getallmembers")
     public ResponseEntity<StandardResponse> getAllMembers() {
-        List<MemberDto> members = adminService.getAllMembers();
+        List<MemberDTO> members = adminService.getAllMembers();
         return ResponseEntity.ok(
                 new StandardResponse(200, "Fetched all members successfully", members)
         );
