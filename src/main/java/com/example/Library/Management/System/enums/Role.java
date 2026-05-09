@@ -1,4 +1,4 @@
-package com.example.Library.Management.System.entity;
+package com.example.Library.Management.System.enums;
 
 public enum Role {
     USER,

@@ -29,21 +29,15 @@ public class AdminController {
     }
 
     @GetMapping("/getallmembers")
-    public ResponseEntity<StandardResponse> getAllMembers() {
-        List<MemberDTO> members = adminService.getAllMembers();
+    public ResponseEntity<StandardResponse> getAllMembers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchText) {
         return ResponseEntity.ok(
-                new StandardResponse(200, "Fetched all members successfully", members)
+                new StandardResponse(200, "Fetched all members successfully", adminService.getAllMembers(page, size, searchText))
         );
     }
 
-    @PostMapping("/addinformation")
-    public ResponseEntity<StandardResponse>addInformattion(@RequestBody ConditionDto condition){
-        adminService.saveCondition(condition);
-        return new ResponseEntity<>(
-                new StandardResponse(201,"data add sucessfully",null),
-                HttpStatus.CREATED
-        );
-    }
 
 
 }

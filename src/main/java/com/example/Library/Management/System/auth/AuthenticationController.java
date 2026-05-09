@@ -1,7 +1,5 @@
 package com.example.Library.Management.System.auth;
 
-
-import com.example.Library.Management.System.dto.UpdateUserDetailsDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

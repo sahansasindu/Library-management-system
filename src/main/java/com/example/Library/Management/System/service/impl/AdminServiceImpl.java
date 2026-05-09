@@ -1,13 +1,12 @@
 package com.example.Library.Management.System.service.impl;
 
-import com.example.Library.Management.System.dto.request.ConditionDto;
 import com.example.Library.Management.System.dto.MemberDTO;
-import com.example.Library.Management.System.dto.response.ConditionResponseDto;
-import com.example.Library.Management.System.entity.Condition;
+import com.example.Library.Management.System.dto.paginate.MemberResponsePaginatedDto;
 import com.example.Library.Management.System.entity.Member;
-import com.example.Library.Management.System.repository.ConditionRepository;
 import com.example.Library.Management.System.repository.MemberRepository;
 import com.example.Library.Management.System.service.AdminService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +20,6 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private MemberRepository memberRepository;
 
-    @Autowired
-    private ConditionRepository conditionRepository;
 
     @Override
     public void addNewMember(MemberDTO memberDTO) {
@@ -37,9 +34,18 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<MemberDTO> getAllMembers() {
-        List<Member>members=memberRepository.findAll();
-        return members.stream().map(this::mapToDto).collect(Collectors.toList());
+    public MemberResponsePaginatedDto getAllMembers(int page, int size, String searchText) {
+        Page<Member> memberPage;
+        if (searchText == null || searchText.isEmpty()) {
+            memberPage = memberRepository.findAll(PageRequest.of(page, size));
+        } else {
+            memberPage = memberRepository.searchMembers(searchText, PageRequest.of(page, size));
+        }
+
+        return MemberResponsePaginatedDto.builder()
+                .dataCount(memberPage.getTotalElements())
+                .dataList(memberPage.getContent().stream().map(this::mapToDto).collect(Collectors.toList()))
+                .build();
     }
     
     private MemberDTO mapToDto(Member member){
@@ -54,26 +60,6 @@ public class AdminServiceImpl implements AdminService {
         return memberDto;
     }
 
-    @Override
-    public void saveCondition(ConditionDto conditionDto) {
-        conditionRepository.save(toCondition(conditionDto));
-    }
 
-    private Condition toCondition(ConditionDto conditionDto) {
-        if (conditionDto == null) throw new RuntimeException("ConditionDto is null");
-
-        return Condition.builder()
-                .entry_payment(conditionDto.getEntry_payment())
-                .penalty_cost(conditionDto.getPenalty_cost())
-                .build();
-    }
-
-    private ConditionResponseDto Conditionto(Condition condition) {
-        if (condition == null) throw new RuntimeException("null");
-        return ConditionResponseDto.builder()
-                .entry_payment(condition.getEntry_payment())
-                .penalty_cost(condition.getPenalty_cost())
-                .build();
-    }
 
 }

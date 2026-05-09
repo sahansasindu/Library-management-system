@@ -12,6 +12,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -23,16 +28,29 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/demo-controller/getadmin","/api/v1/demo-controller/adduser","/api/v1/admin/adduser","/api/books/reserve","/api/books/returnbook","/api/books/borrowbookrecoard").hasAuthority("ADMIN")
-                        .requestMatchers("/api/v1/admin/getallmembers","/api/books/reservationdetails","/api/books/reservationdetails","/api/books/issueBookdetails","/api/books/returnbookdetails").hasAuthority("ADMIN")
-                        .requestMatchers("http://localhost:8080/api/v1/demo-controller/getuser").hasAuthority("USER")
+                        .requestMatchers("/api/v1/admin/getallmembers","/api/v1/admin/getuseraccount","/api/v1/admin/getinformation","/api/v1/admin/addinformation","/api/books/reservationdetails","/api/books/issueBookdetails","/api/books/returnbookdetails").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/demo-controller/getuser").hasAuthority("USER")
                         .requestMatchers("/api/v1/auth/updateprofile").hasAnyAuthority("ADMIN", "USER")
-                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/authenticate","/api/books/all","/api/books/add")
+                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/authenticate","/api/books/all","/api/books/add","/api/rag")
                         .permitAll()
 
                         .anyRequest().authenticated()

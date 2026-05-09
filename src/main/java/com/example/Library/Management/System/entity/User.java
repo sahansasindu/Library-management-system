@@ -27,6 +27,7 @@ public class User implements UserDetails {
     private String password;
 
     @Column(name = "activestate", nullable = false)
+    @Builder.Default
     private Boolean active_state = true;
 
     @OneToOne

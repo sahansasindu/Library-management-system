@@ -7,6 +7,7 @@ import com.example.Library.Management.System.dto.request.ReturnBookDto;
 import com.example.Library.Management.System.dto.response.IssueBookResponseDto;
 import com.example.Library.Management.System.dto.response.ResearveBookResponseDto;
 import com.example.Library.Management.System.dto.response.ReturnBookResponseDto;
+import com.example.Library.Management.System.dto.paginate.BookResponsePaginatedDto;
 import com.example.Library.Management.System.service.BookService;
 import com.example.Library.Management.System.utill.StandardResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +28,7 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    private static final long MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+    private static final long MAX_FILE_SIZE = 2 * 1024 * 1024;
 
     @PostMapping(value = "/add", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<StandardResponse> addBook(
@@ -47,63 +48,56 @@ public class BookController {
         return ResponseEntity.ok(new StandardResponse(200, "Book added successfully", savedBook));
     }
 
-
     @GetMapping("/all")
-    public ResponseEntity<List<BookDto>> getAllBooks() {
-        return ResponseEntity.ok(bookService.getAllBooks());
+    public ResponseEntity<StandardResponse> getAllBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchText) {
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Fetched all books successfully",
+                        bookService.getAllBooks(page, size, searchText)));
     }
-
 
     @PostMapping("/reserve")
     public ResponseEntity<StandardResponse> reserveBook(@RequestBody ResearveBookDto researveBookDto) {
         bookService.reseaveBook(researveBookDto);
         return ResponseEntity.ok(
-                new StandardResponse(200, "Book reserved successfully", researveBookDto.getBook_id())
-        );
+                new StandardResponse(200, "Book reserved successfully", researveBookDto.getBook_id()));
     }
 
     @PostMapping("/returnbook")
     public ResponseEntity<StandardResponse> returnBook(@RequestBody ReturnBookDto returnBookDto) {
         bookService.returnBook(returnBookDto);
         return ResponseEntity.ok(
-                new StandardResponse(200, "Book returned successfully", returnBookDto.getBookid())
-        );
+                new StandardResponse(200, "Book returned successfully", returnBookDto.getBookid()));
     }
-
 
     @PostMapping("/borrowbookrecoard")
     public ResponseEntity<StandardResponse> borrowBook(@RequestBody ReportDto reportDto) {
         bookService.issueBookHandle(reportDto);
         return ResponseEntity.ok(
-                new StandardResponse(200, "Book borrowed successfully", reportDto.getBook_id())
-        );
+                new StandardResponse(200, "Book borrowed successfully", reportDto.getBook_id()));
     }
 
-
     @GetMapping("/reservationdetails")
-    public ResponseEntity<StandardResponse> getReserveBook(){
-        List<ResearveBookResponseDto> reservationdetails=bookService.getAllReservation();
+    public ResponseEntity<StandardResponse> getReserveBook() {
+        List<ResearveBookResponseDto> reservationdetails = bookService.getAllReservation();
         return ResponseEntity.ok(
-                new StandardResponse(200,"Fetched all members successfully",reservationdetails)
-        );
+                new StandardResponse(200, "Fetched all members successfully", reservationdetails));
     }
 
     @GetMapping("/returnbookdetails")
-    public ResponseEntity<StandardResponse>getReturnBookDetails(){
-        List<ReturnBookResponseDto>returnboodetails=bookService.getAllReturnBook();
+    public ResponseEntity<StandardResponse> getReturnBookDetails() {
+        List<ReturnBookResponseDto> returnboodetails = bookService.getAllReturnBook();
         return ResponseEntity.ok(
-                new StandardResponse(200,"Fetched all returnbook details",returnboodetails)
-        );
+                new StandardResponse(200, "Fetched all returnbook details", returnboodetails));
     }
 
     @GetMapping("/issueBookdetails")
-    public ResponseEntity<StandardResponse>getIssueBookDetails(){
-        List<IssueBookResponseDto>issuebookdetails=bookService.getAllIssuedBook();
+    public ResponseEntity<StandardResponse> getIssueBookDetails() {
+        List<IssueBookResponseDto> issuebookdetails = bookService.getAllIssuedBook();
         return ResponseEntity.ok(
-                new StandardResponse(200,"Fetched all issued details",issuebookdetails)
-        );
+                new StandardResponse(200, "Fetched all issued details", issuebookdetails));
     }
-
-
 
 }

@@ -1,7 +1,6 @@
 package com.example.Library.Management.System.auth;
 import com.example.Library.Management.System.entity.Member;
 import com.example.Library.Management.System.config.JwtService;
-import com.example.Library.Management.System.entity.Role;
 import com.example.Library.Management.System.entity.User;
 import com.example.Library.Management.System.repository.MemberRepository;
 import com.example.Library.Management.System.repository.UserRepository;
@@ -28,7 +27,7 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
-                .active_state(true) // Ensure the user is active when registered
+                .active_state(true)
                 .build();
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);
@@ -51,7 +50,6 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
