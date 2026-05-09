@@ -12,7 +12,7 @@ import java.util.Map;
 @Service
 public class OpenAIService {
 
-    private final String API_KEY = "sdfs";
+    private final String API_KEY = "github";
     private final String URL = "https://models.inference.ai.azure.com/chat/completions";
 
     public String askLLM(String question) {
