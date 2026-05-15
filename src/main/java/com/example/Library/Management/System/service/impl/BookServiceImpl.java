@@ -47,6 +47,9 @@ public class BookServiceImpl implements BookService {
     @Autowired
     private ReportRepository reportRepository;
 
+    @Autowired
+    private TransectionRepository transectionRepository;
+
     @Override
     @Transactional
     public BookDto addBook(BookDto bookDto, MultipartFile file) {
@@ -116,17 +119,10 @@ public class BookServiceImpl implements BookService {
         for (ReseaveBook reservation : expiredReservations) {
             reservation.setState(false);
 
-            Book book = reservation.getBook();
-
-            if (book != null) {
-
-                if (book.getQty() > 0) {
-                    book.setQty(book.getQty() - 1);
-                }
-                bookRepository.save(book);
-            }
-
             reseaveBookRepository.save(reservation);
+            
+            Transection transection = new Transection("Reservation expired for book " + reservation.getBook().getBookId() + " by member " + reservation.getMember().getMember_id(), new java.util.Date(), com.example.Library.Management.System.enums.TransectionType.OVERDUE);
+            transectionRepository.save(transection);
         }
     }
 
@@ -141,10 +137,18 @@ public class BookServiceImpl implements BookService {
 
         LocalDate currentDate = LocalDate.now();
         Date reservedDate = Date.valueOf(currentDate);
+        
+        int durationDays = com.example.Library.Management.System.enums.ReceiveBookDuration.duraton.getDuration();
+        LocalDate dueLocalDate = currentDate.plusDays(durationDays);
+        Date dueDate = Date.valueOf(dueLocalDate);
 
         try {
             ReseaveBook reseaveBook = new ReseaveBook(member, book, reservedDate);
+            reseaveBook.setDueDate(dueDate);
             reseaveBookRepository.save(reseaveBook);
+            
+            Transection transection = new Transection("Book reserved: " + book.getBookId() + " by member: " + member.getMember_id(), new java.util.Date(), com.example.Library.Management.System.enums.TransectionType.RECEIVE);
+            transectionRepository.save(transection);
         } catch (DataAccessException e) {
             throw new RuntimeException("Error reserving book: " + e.getMessage());
         }
@@ -184,6 +188,14 @@ public class BookServiceImpl implements BookService {
 
             ReturnBook returnBook = new ReturnBook(book, member, sqlReceivedDate, penaltyCost);
             returnBookRepository.save(returnBook);
+            
+            Transection returnTransection = new Transection("Book returned: " + book.getBookId() + " by member: " + member.getMember_id(), new java.util.Date(), com.example.Library.Management.System.enums.TransectionType.RETURN);
+            transectionRepository.save(returnTransection);
+
+            if (penaltyCost > 0) {
+                Transection overdueTransection = new Transection("Overdue book returned: " + book.getBookId() + " by member: " + member.getMember_id(), new java.util.Date(), com.example.Library.Management.System.enums.TransectionType.OVERDUE);
+                transectionRepository.save(overdueTransection);
+            }
 
         } else {
             System.out.println("No reservation found.");
@@ -227,6 +239,9 @@ public class BookServiceImpl implements BookService {
         Report report = new Report(issueDateSql, dueDateSql, member, book);
         try {
             reportRepository.save(report);
+            
+            Transection transection = new Transection("Book issued: " + book.getBookId() + " to member: " + member.getMember_id(), new java.util.Date(), com.example.Library.Management.System.enums.TransectionType.BORROW);
+            transectionRepository.save(transection);
         } catch (DataAccessException e) {
             throw new RuntimeException("Error issuing book: " + e.getMessage());
         }
@@ -236,6 +251,14 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<ResearveBookResponseDto> getAllReservation() {
         List<ReseaveBook> researveBookDtoList = reseaveBookRepository.findAll();
+        return researveBookDtoList.stream()
+                .map(this::researveBookDtoTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ResearveBookResponseDto> getReservationByMemberId(String memberId) {
+        List<ReseaveBook> researveBookDtoList = reseaveBookRepository.findByMemberId(memberId);
         return researveBookDtoList.stream()
                 .map(this::researveBookDtoTO)
                 .collect(Collectors.toList());

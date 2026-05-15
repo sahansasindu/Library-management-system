@@ -46,8 +46,10 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/demo-controller/getadmin","/api/v1/demo-controller/adduser","/api/v1/admin/adduser","/api/books/reserve","/api/books/returnbook","/api/books/borrowbookrecoard").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/demo-controller/getadmin","/api/v1/demo-controller/adduser","/api/v1/admin/adduser","/api/books/returnbook","/api/books/borrowbookrecoard").hasAuthority("ADMIN")
+                        .requestMatchers("/api/books/reserve").hasAuthority("USER")
                         .requestMatchers("/api/v1/admin/getallmembers","/api/v1/admin/getuseraccount","/api/v1/admin/getinformation","/api/v1/admin/addinformation","/api/books/reservationdetails","/api/books/issueBookdetails","/api/books/returnbookdetails").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/admin/getuseraccount","api/v1/admin/{id}").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/demo-controller/getuser").hasAuthority("USER")
                         .requestMatchers("/api/v1/auth/updateprofile").hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/authenticate","/api/books/all","/api/books/add","/api/rag")

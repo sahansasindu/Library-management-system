@@ -31,6 +31,8 @@ public interface BookService {
 
     List<ResearveBookResponseDto> getAllReservation();
 
+    List<ResearveBookResponseDto> getReservationByMemberId(String memberId);
+
     List<ReturnBookResponseDto> getAllReturnBook();
 
     List<IssueBookResponseDto> getAllIssuedBook();

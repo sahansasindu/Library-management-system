@@ -9,8 +9,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class ConditionResponseDto {
-    private double entry_payment;
+public class UserResponseDto {
 
-    private double penalty_cost;
+    private String memberid;
+    private String email;
+    private String role;
+    private Boolean active_state;
+
+
 }

@@ -24,6 +24,9 @@ public class ReseaveBook {
     @Column(name = "reserved_date", nullable = false)
     private Date reservedDate;
 
+    @Column(name= "due_date",nullable = false)
+    private Date dueDate;
+
     @Column(name = "state", nullable = false)
     private Boolean state = true;
 
@@ -79,5 +82,13 @@ public class ReseaveBook {
 
     public void setState(Boolean state) {
         this.state = state;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
     }
 }

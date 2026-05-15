@@ -86,6 +86,13 @@ public class BookController {
                 new StandardResponse(200, "Fetched all members successfully", reservationdetails));
     }
 
+    @GetMapping("/reservationdetails/{memberId}")
+    public ResponseEntity<StandardResponse> getReserveBookByMemberId(@PathVariable String memberId) {
+        List<ResearveBookResponseDto> reservationdetails = bookService.getReservationByMemberId(memberId);
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Fetched reservation details successfully", reservationdetails));
+    }
+
     @GetMapping("/returnbookdetails")
     public ResponseEntity<StandardResponse> getReturnBookDetails() {
         List<ReturnBookResponseDto> returnboodetails = bookService.getAllReturnBook();
