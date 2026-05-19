@@ -63,11 +63,11 @@ public class OpenAIService {
 
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                return "Error: AI Service Unauthorized. Please check your API key in application.properties.";
+                return "Error: AI Service Unauthorized.";
             }
             return "Error calling AI Service: " + e.getStatusCode() + " " + e.getResponseBodyAsString();
         } catch (HttpServerErrorException e) {
-            return "Error: AI Service is currently unavailable. Please try again later.";
+            return "Error: Please try again later.";
         } catch (Exception e) {
             return "Error: An unexpected error occurred while communicating with the AI service: " + e.getMessage();
         }

@@ -4,10 +4,7 @@ import com.example.Library.Management.System.dto.BookDto;
 import com.example.Library.Management.System.dto.request.ReportDto;
 import com.example.Library.Management.System.dto.request.ResearveBookDto;
 import com.example.Library.Management.System.dto.request.ReturnBookDto;
-import com.example.Library.Management.System.dto.response.IssueBookResponseDto;
 import com.example.Library.Management.System.dto.response.ResearveBookResponseDto;
-import com.example.Library.Management.System.dto.response.ReturnBookResponseDto;
-import com.example.Library.Management.System.dto.paginate.BookResponsePaginatedDto;
 import com.example.Library.Management.System.service.BookService;
 import com.example.Library.Management.System.utill.StandardResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,6 +55,16 @@ public class BookController {
                         bookService.getAllBooks(page, size, searchText)));
     }
 
+    @GetMapping("/all-for-admin")
+    public ResponseEntity<StandardResponse> getAllBooksForAdmin(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchText) {
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Fetched all books for admin successfully",
+                        bookService.getAllBooksForAdmin(page, size, searchText)));
+    }
+
     @PostMapping("/reserve")
     public ResponseEntity<StandardResponse> reserveBook(@RequestBody ResearveBookDto researveBookDto) {
         bookService.reseaveBook(researveBookDto);
@@ -80,10 +87,12 @@ public class BookController {
     }
 
     @GetMapping("/reservationdetails")
-    public ResponseEntity<StandardResponse> getReserveBook() {
-        List<ResearveBookResponseDto> reservationdetails = bookService.getAllReservation();
+    public ResponseEntity<StandardResponse> getReserveBook(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(
-                new StandardResponse(200, "Fetched all members successfully", reservationdetails));
+                new StandardResponse(200, "Fetched all reserved books successfully",
+                        bookService.getAllReservation(page, size)));
     }
 
     @GetMapping("/reservationdetails/{memberId}")
@@ -94,17 +103,66 @@ public class BookController {
     }
 
     @GetMapping("/returnbookdetails")
-    public ResponseEntity<StandardResponse> getReturnBookDetails() {
-        List<ReturnBookResponseDto> returnboodetails = bookService.getAllReturnBook();
+    public ResponseEntity<StandardResponse> getReturnBookDetails(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String searchText) {
         return ResponseEntity.ok(
-                new StandardResponse(200, "Fetched all returnbook details", returnboodetails));
+                new StandardResponse(200, "Fetched all returnbook details successfully",
+                        bookService.getAllReturnBook(page, size, searchText)));
     }
 
     @GetMapping("/issueBookdetails")
-    public ResponseEntity<StandardResponse> getIssueBookDetails() {
-        List<IssueBookResponseDto> issuebookdetails = bookService.getAllIssuedBook();
+    public ResponseEntity<StandardResponse> getIssueBookDetails(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String searchText) {
         return ResponseEntity.ok(
-                new StandardResponse(200, "Fetched all issued details", issuebookdetails));
+                new StandardResponse(200, "Fetched all issued details successfully",
+                        bookService.getAllIssuedBook(page, size, searchText)));
+    }
+
+    @PutMapping("/changeActiveState/{bookId}")
+    public ResponseEntity<StandardResponse> changeActiveState(
+            @PathVariable String bookId,
+            @RequestParam Boolean activeState) {
+        bookService.changeActiveState(bookId, activeState);
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Active state updated successfully", bookId));
+    }
+
+    @GetMapping("/userdashboard/{memberId}")
+    public ResponseEntity<StandardResponse> getUserDashboard(@PathVariable String memberId) {
+        return ResponseEntity.ok(
+                new StandardResponse(200, "User dashboard data fetched successfully",
+                        bookService.getUserDashboard(memberId)));
+    }
+
+    @GetMapping("/borrowhistory/{memberId}")
+    public ResponseEntity<StandardResponse> getBorrowHistory(
+            @PathVariable String memberId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Fetched borrow history successfully",
+                        bookService.getBorrowHistory(memberId, page, size)));
+    }
+
+    @GetMapping("/returnhistory/{memberId}")
+    public ResponseEntity<StandardResponse> getReturnHistory(
+            @PathVariable String memberId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Fetched return history successfully",
+                        bookService.getReturnHistory(memberId, page, size)));
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<StandardResponse> getAllCategories() {
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Fetched all categories successfully",
+                        bookService.getAllCategories()));
     }
 
 }

@@ -26,7 +26,7 @@ public class Report {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    // Constructors
+
     public Report() {}
 
     public Report(Date issueDate, Date dueDate, Member member, Book book) {
@@ -36,7 +36,7 @@ public class Report {
         this.book = book;
     }
 
-    // Getters and Setters
+
     public int getReportId() {
         return reportId;
     }

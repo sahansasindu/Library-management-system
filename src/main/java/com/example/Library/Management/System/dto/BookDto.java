@@ -9,8 +9,9 @@ public class BookDto {
     private String category;
     private int qty;
     private String photoBase64; // Change to Base64
+    private Boolean activeState = true;
 
-    // Getters and Setters
+
     public String getBookid() { return bookid; }
     public void setBookid(String bookid) { this.bookid = bookid; }
 
@@ -31,4 +32,7 @@ public class BookDto {
 
     public String getPhotoBase64() { return photoBase64; }
     public void setPhotoBase64(String photoBase64) { this.photoBase64 = photoBase64; }
+
+    public Boolean getActiveState() { return activeState; }
+    public void setActiveState(Boolean activeState) { this.activeState = activeState; }
 }

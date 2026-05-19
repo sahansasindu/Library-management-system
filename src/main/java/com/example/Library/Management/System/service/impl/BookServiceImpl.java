@@ -79,6 +79,21 @@ public class BookServiceImpl implements BookService {
     public BookResponsePaginatedDto getAllBooks(int page, int size, String searchText) {
         Page<Book> booksPage;
         if (searchText == null || searchText.isEmpty()) {
+            booksPage = bookRepository.findByActiveStateTrue(PageRequest.of(page, size));
+        } else {
+            booksPage = bookRepository.findByActiveStateTrueAndSearch(searchText, PageRequest.of(page, size));
+        }
+
+        return BookResponsePaginatedDto.builder()
+                .dataCount(booksPage.getTotalElements())
+                .dataList(booksPage.getContent().stream().map(this::mapToDto).collect(Collectors.toList()))
+                .build();
+    }
+
+    @Override
+    public BookResponsePaginatedDto getAllBooksForAdmin(int page, int size, String searchText) {
+        Page<Book> booksPage;
+        if (searchText == null || searchText.isEmpty()) {
             booksPage = bookRepository.findAll(PageRequest.of(page, size));
         } else {
             booksPage = bookRepository.findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(searchText,
@@ -99,6 +114,7 @@ public class BookServiceImpl implements BookService {
         dto.setIsbn(book.getIsbn());
         dto.setCategory(book.getCategory());
         dto.setQty(book.getQty());
+        dto.setActiveState(book.getActive_state());
 
         if (book.getPhoto() != null) {
             String base64Image = Base64.getEncoder().encodeToString(book.getPhoto());
@@ -250,10 +266,23 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<ResearveBookResponseDto> getAllReservation() {
-        List<ReseaveBook> researveBookDtoList = reseaveBookRepository.findAll();
+        List<ReseaveBook> researveBookDtoList = reseaveBookRepository.findByStateTrue();
         return researveBookDtoList.stream()
                 .map(this::researveBookDtoTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public com.example.Library.Management.System.dto.paginate.ReservedBookResponsePaginatedDto getAllReservation(int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<ReseaveBook> pageResult = reseaveBookRepository.findByStateTrue(pageable);
+        List<ResearveBookResponseDto> list = pageResult.getContent().stream()
+                .map(this::researveBookDtoTO)
+                .collect(Collectors.toList());
+        return com.example.Library.Management.System.dto.paginate.ReservedBookResponsePaginatedDto.builder()
+                .dataCount(pageResult.getTotalElements())
+                .dataList(list)
+                .build();
     }
 
     @Override
@@ -282,6 +311,24 @@ public class BookServiceImpl implements BookService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public com.example.Library.Management.System.dto.paginate.ReturnBookResponsePaginatedDto getAllReturnBook(int page, int size, String searchText) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<ReturnBook> pageResult;
+        if (searchText != null && !searchText.trim().isEmpty()) {
+            pageResult = returnBookRepository.searchReturnedBooks(searchText.trim(), pageable);
+        } else {
+            pageResult = returnBookRepository.findAll(pageable);
+        }
+        List<ReturnBookResponseDto> list = pageResult.getContent().stream()
+                .map(this::returnBookResponseDtoTo)
+                .collect(Collectors.toList());
+        return com.example.Library.Management.System.dto.paginate.ReturnBookResponsePaginatedDto.builder()
+                .dataCount(pageResult.getTotalElements())
+                .dataList(list)
+                .build();
+    }
+
     private ReturnBookResponseDto returnBookResponseDtoTo(ReturnBook returnBook) {
         ReturnBookResponseDto responseDto = new ReturnBookResponseDto();
         responseDto.setBook_id(returnBook.getBook().getBookId());
@@ -299,6 +346,24 @@ public class BookServiceImpl implements BookService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public com.example.Library.Management.System.dto.paginate.IssueBookResponsePaginatedDto getAllIssuedBook(int page, int size, String searchText) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<Report> pageResult;
+        if (searchText != null && !searchText.trim().isEmpty()) {
+            pageResult = reportRepository.searchIssuedBooks(searchText.trim(), pageable);
+        } else {
+            pageResult = reportRepository.findAll(pageable);
+        }
+        List<IssueBookResponseDto> list = pageResult.getContent().stream()
+                .map(this::issueBookResponseDtoTO)
+                .collect(Collectors.toList());
+        return com.example.Library.Management.System.dto.paginate.IssueBookResponsePaginatedDto.builder()
+                .dataCount(pageResult.getTotalElements())
+                .dataList(list)
+                .build();
+    }
+
     private IssueBookResponseDto issueBookResponseDtoTO(Report report) {
         IssueBookResponseDto issueBookResponseDto = new IssueBookResponseDto();
         issueBookResponseDto.setBook_id(report.getBook().getBookId());
@@ -307,6 +372,115 @@ public class BookServiceImpl implements BookService {
         issueBookResponseDto.setDueDate(report.getDueDate());
         return issueBookResponseDto;
 
+    }
+
+    @Override
+    @Transactional
+    public void changeActiveState(String bookId, Boolean activeState) {
+        Book book = bookRepository.findByBookId(bookId)
+                .orElseThrow(() -> new RuntimeException("Book not found with ID: " + bookId));
+        book.setActive_state(activeState);
+        bookRepository.save(book);
+    }
+
+    @Override
+    public com.example.Library.Management.System.dto.response.UserDashboardDto getUserDashboard(String memberId) {
+
+        List<ReseaveBook> reserved = reseaveBookRepository.findByMemberId(memberId);
+        List<com.example.Library.Management.System.dto.response.UserDashboardDto.ReservedBookItem> reservedItems =
+            reserved.stream().map(r -> new com.example.Library.Management.System.dto.response.UserDashboardDto.ReservedBookItem(
+                r.getBook().getBookId(),
+                r.getBook().getTitle(),
+                r.getBook().getAuthor(),
+                r.getReservedDate() != null ? r.getReservedDate().toString() : "",
+                r.getDueDate() != null ? r.getDueDate().toString() : "",
+                r.getState()
+            )).collect(Collectors.toList());
+
+
+        List<ReturnBook> returnBooks = returnBookRepository.findByMemberId(memberId);
+        List<String> returnedBookIds = returnBooks.stream().map(r -> r.getBook().getBookId()).collect(Collectors.toList());
+
+
+        List<Report> reports = reportRepository.findByMemberId(memberId);
+        List<com.example.Library.Management.System.dto.response.UserDashboardDto.IssuedBookItem> issuedItems =
+            reports.stream().map(r -> new com.example.Library.Management.System.dto.response.UserDashboardDto.IssuedBookItem(
+                r.getBook().getBookId(),
+                r.getBook().getTitle(),
+                r.getBook().getAuthor(),
+                r.getIssueDate() != null ? r.getIssueDate().toString() : "",
+                r.getDueDate() != null ? r.getDueDate().toString() : "",
+                returnedBookIds.contains(r.getBook().getBookId())
+            )).collect(Collectors.toList());
+
+        List<com.example.Library.Management.System.dto.response.UserDashboardDto.ReturnedBookItem> returnedItems =
+            returnBooks.stream().map(r -> new com.example.Library.Management.System.dto.response.UserDashboardDto.ReturnedBookItem(
+                r.getBook().getBookId(),
+                r.getBook().getTitle(),
+                r.getBook().getAuthor(),
+                r.getRecived_date() != null ? r.getRecived_date().toString() : "",
+                r.getPenalty_amount(),
+                r.getIsPaid() != null ? r.getIsPaid() : false
+            )).collect(Collectors.toList());
+
+        double totalFines = returnBooks.stream()
+            .filter(r -> r.getIsPaid() == null || !r.getIsPaid())
+            .mapToDouble(ReturnBook::getPenalty_amount).sum();
+
+        return new com.example.Library.Management.System.dto.response.UserDashboardDto(
+                reservedItems, issuedItems, returnedItems, totalFines);
+    }
+
+    @Override
+    public com.example.Library.Management.System.dto.paginate.BorrowHistoryResponsePaginatedDto getBorrowHistory(String memberId, int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<Report> reportsPage = reportRepository.findByMemberId(memberId, pageable);
+        List<ReturnBook> returnBooks = returnBookRepository.findByMemberId(memberId);
+        List<String> returnedBookIds = returnBooks.stream().map(r -> r.getBook().getBookId()).collect(Collectors.toList());
+
+        List<com.example.Library.Management.System.dto.response.UserDashboardDto.IssuedBookItem> list = reportsPage.getContent().stream().map(r -> new com.example.Library.Management.System.dto.response.UserDashboardDto.IssuedBookItem(
+            r.getBook().getBookId(),
+            r.getBook().getTitle(),
+            r.getBook().getAuthor(),
+            r.getIssueDate() != null ? r.getIssueDate().toString() : "",
+            r.getDueDate() != null ? r.getDueDate().toString() : "",
+            returnedBookIds.contains(r.getBook().getBookId())
+        )).collect(Collectors.toList());
+
+        return com.example.Library.Management.System.dto.paginate.BorrowHistoryResponsePaginatedDto.builder()
+            .dataCount(reportsPage.getTotalElements())
+            .dataList(list)
+            .build();
+    }
+
+    @Override
+    public com.example.Library.Management.System.dto.paginate.ReturnHistoryResponsePaginatedDto getReturnHistory(String memberId, int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<ReturnBook> returnBooksPage = returnBookRepository.findByMemberId(memberId, pageable);
+
+        List<com.example.Library.Management.System.dto.response.UserDashboardDto.ReturnedBookItem> list = returnBooksPage.getContent().stream().map(r -> new com.example.Library.Management.System.dto.response.UserDashboardDto.ReturnedBookItem(
+            r.getBook().getBookId(),
+            r.getBook().getTitle(),
+            r.getBook().getAuthor(),
+            r.getRecived_date() != null ? r.getRecived_date().toString() : "",
+            r.getPenalty_amount(),
+            r.getIsPaid() != null ? r.getIsPaid() : false
+        )).collect(Collectors.toList());
+
+        return com.example.Library.Management.System.dto.paginate.ReturnHistoryResponsePaginatedDto.builder()
+            .dataCount(returnBooksPage.getTotalElements())
+            .dataList(list)
+            .build();
+    }
+
+    @Override
+    public List<String> getAllCategories() {
+        List<Object[]> categoryCountsRaw = bookRepository.countBooksByCategory();
+        return categoryCountsRaw.stream()
+                .map(row -> row[0] != null ? row[0].toString() : "Uncategorized")
+                .filter(cat -> !cat.equalsIgnoreCase("Uncategorized"))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
 }

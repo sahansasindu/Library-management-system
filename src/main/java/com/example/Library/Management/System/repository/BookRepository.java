@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, Long> {
+public interface BookRepository extends JpaRepository<Book, String> {
     Optional<Book> findByBookId(String bookId);
 
     List<Book> findByTitleContainingIgnoreCase(String title);
@@ -19,6 +19,13 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Page<Book> findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String title, String category, Pageable pageable);
 
+    @Query("SELECT b FROM Book b WHERE b.active_state = true")
+    Page<Book> findByActiveStateTrue(Pageable pageable);
 
+    @Query("SELECT b FROM Book b WHERE b.active_state = true AND (LOWER(b.title) LIKE LOWER(CONCAT('%', :searchText, '%')) OR LOWER(b.category) LIKE LOWER(CONCAT('%', :searchText, '%')))")
+    Page<Book> findByActiveStateTrueAndSearch(@org.springframework.data.repository.query.Param("searchText") String searchText, Pageable pageable);
 
+    @Query("SELECT b.category, COUNT(b) FROM Book b GROUP BY b.category")
+    List<Object[]> countBooksByCategory();
 }
+

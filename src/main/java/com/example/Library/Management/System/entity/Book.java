@@ -31,7 +31,7 @@ public class Book {
     @Column(name = "activestate", nullable = false)
     private Boolean active_state = true;
 
-    // Getters and Setters
+
     public byte[] getPhoto() {
         return photo;
     }

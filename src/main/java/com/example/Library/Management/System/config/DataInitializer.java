@@ -22,7 +22,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        String adminEmail = "admin@example.com";
+        String adminEmail = "admin@demo.com";
         Optional<User> adminUser = userRepository.findByEmail(adminEmail);
 
         if (adminUser.isEmpty()) {

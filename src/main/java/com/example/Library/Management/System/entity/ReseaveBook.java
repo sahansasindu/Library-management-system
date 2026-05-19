@@ -24,7 +24,7 @@ public class ReseaveBook {
     @Column(name = "reserved_date", nullable = false)
     private Date reservedDate;
 
-    @Column(name= "due_date",nullable = false)
+    @Column(name= "due_date", nullable = true)
     private Date dueDate;
 
     @Column(name = "state", nullable = false)
@@ -43,7 +43,6 @@ public class ReseaveBook {
     }
 
 
-    // Getters and Setters
     public long getReserveId() {
         return reserveId;
     }

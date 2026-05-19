@@ -25,6 +25,9 @@ public class ReturnBook {
     @Column(name="penalty_amount")
     private double penalty_amount;
 
+    @Column(name="is_paid")
+    private Boolean isPaid = false;
+
     public ReturnBook() {
     }
 
@@ -33,6 +36,14 @@ public class ReturnBook {
         this.member = member;
         this.recived_date = recived_date;
         this.penalty_amount = penalty_amount;
+    }
+
+    public long getReturnbook_id() {
+        return returnbook_id;
+    }
+
+    public void setReturnbook_id(long returnbook_id) {
+        this.returnbook_id = returnbook_id;
     }
 
     public Book getBook() {
@@ -65,5 +76,13 @@ public class ReturnBook {
 
     public void setPenalty_amount(double penalty_amount) {
         this.penalty_amount = penalty_amount;
+    }
+
+    public Boolean getIsPaid() {
+        return isPaid;
+    }
+
+    public void setIsPaid(Boolean isPaid) {
+        this.isPaid = isPaid;
     }
 }

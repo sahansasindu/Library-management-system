@@ -1,0 +1,23 @@
+# Build output
+target/
+
+# IDE files
+.idea/
+*.iml
+
+# Git
+.git/
+.gitignore
+
+# OS files
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Uploaded files (adjust if needed at runtime via volumes)
+uploads*/

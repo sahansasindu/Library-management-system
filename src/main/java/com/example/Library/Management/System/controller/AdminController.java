@@ -1,7 +1,7 @@
 package com.example.Library.Management.System.controller;
 
-import com.example.Library.Management.System.dto.request.ConditionDto;
 import com.example.Library.Management.System.dto.MemberDTO;
+import com.example.Library.Management.System.dto.response.AdminDashboardStatsDto;
 import com.example.Library.Management.System.dto.response.UserResponseDto;
 import com.example.Library.Management.System.service.impl.AdminServiceImpl;
 import com.example.Library.Management.System.utill.StandardResponse;
@@ -41,7 +41,6 @@ public class AdminController {
     }
 
 
-
     @GetMapping("/getuseraccount")
     public ResponseEntity<StandardResponse>getUserInformation(){
         List<UserResponseDto>userdetails=adminService.geyAccountDetails();
@@ -49,7 +48,6 @@ public class AdminController {
                 new StandardResponse(200,"Fetch all details",userdetails)
         );
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<StandardResponse> updateState(@PathVariable("id") String member_id, @RequestBody Map<String, Boolean> stateRequest) {
@@ -64,7 +62,27 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/dashboard")
+    public ResponseEntity<StandardResponse> getDashboardStats() {
+        AdminDashboardStatsDto stats = adminService.getDashboardStats();
+        return ResponseEntity.ok(new StandardResponse(200, "Dashboard stats fetched successfully", stats));
+    }
 
+    @GetMapping("/fines")
+    public ResponseEntity<StandardResponse> getAllFines() {
+        return ResponseEntity.ok(
+                new StandardResponse(200, "Fetched all fines successfully", adminService.getAllFines())
+        );
+    }
 
-
+    @PutMapping("/fines/{id}/pay")
+    public ResponseEntity<StandardResponse> markFineAsPaid(@PathVariable("id") long returnBookId) {
+        try {
+            adminService.markFineAsPaid(returnBookId);
+            return ResponseEntity.ok(new StandardResponse(200, "Fine marked as paid", returnBookId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new StandardResponse(400, e.getMessage(), returnBookId));
+        }
+    }
 }

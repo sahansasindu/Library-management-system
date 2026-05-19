@@ -3,6 +3,7 @@ package com.example.Library.Management.System.service;
 import com.example.Library.Management.System.dto.request.ConditionDto;
 import com.example.Library.Management.System.dto.MemberDTO;
 import com.example.Library.Management.System.dto.paginate.MemberResponsePaginatedDto;
+import com.example.Library.Management.System.dto.response.AdminDashboardStatsDto;
 import com.example.Library.Management.System.dto.response.UserResponseDto;
 
 import java.util.List;
@@ -17,5 +18,9 @@ public interface AdminService {
 
     boolean updateAccountState(String memberId, boolean newState);
 
+    AdminDashboardStatsDto getDashboardStats();
 
+    List<com.example.Library.Management.System.dto.response.FineDto> getAllFines();
+
+    void markFineAsPaid(long returnBookId);
 }

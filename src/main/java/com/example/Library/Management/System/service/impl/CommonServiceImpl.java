@@ -27,7 +27,7 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void updateprofile(UpdateUserDetailsDto userDetailsDto) {
 
-        // Find the member using userid
+
         Member member = memberRepository.findById(userDetailsDto.getUserid())
                 .orElseThrow(() -> new RuntimeException("Member not found with ID: " + userDetailsDto.getUserid()));
 
@@ -36,7 +36,7 @@ public class CommonServiceImpl implements CommonService {
                 .orElseThrow(() -> new RuntimeException("User not found with member ID: " + userDetailsDto.getUserid()));
 
 
-        // Update the user details
+
         if (userDetailsDto.getPassword() != null && !userDetailsDto.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userDetailsDto.getPassword()));
         }
